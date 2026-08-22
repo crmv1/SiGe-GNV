@@ -1,0 +1,21 @@
+{
+  "name": "gnv-taller-whatsapp",
+  "version": "1.0.0",
+  "description": "Servidor wpp.connect para GNV Taller",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev":   "nodemon server.js"
+  },
+  "dependencies": {
+    "@wppconnect-team/wppconnect": "^1.32.0",
+    "axios":   "^1.7.2",
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

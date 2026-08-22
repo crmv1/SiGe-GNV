@@ -1,0 +1,34 @@
+2026/06/02-18:38:22.609 b438 Reusing MANIFEST C:\Users\CAMS\Music\whatsapp\tokens\gnv-taller\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2026/06/02-18:38:22.610 b438 Recovering log #340
+2026/06/02-18:38:22.636 b438 Reusing old log C:\Users\CAMS\Music\whatsapp\tokens\gnv-taller\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/000340.log 
+2026/06/02-18:38:28.260 b438 Level-0 table #347: started
+2026/06/02-18:38:28.286 b438 Level-0 table #347: 1127741 bytes OK
+2026/06/02-18:38:28.288 b438 Delete type=0 #340
+2026/06/02-18:38:28.344 5d7c Compacting 1@1 + 5@2 files
+2026/06/02-18:38:28.423 5d7c Generated table #348@1: 66809 keys, 2251739 bytes
+2026/06/02-18:38:28.477 5d7c Generated table #349@1: 21210 keys, 2187946 bytes
+2026/06/02-18:38:28.497 5d7c Generated table #350@1: 146 keys, 2135260 bytes
+2026/06/02-18:38:28.537 5d7c Generated table #351@1: 34595 keys, 2146601 bytes
+2026/06/02-18:38:28.537 5d7c Compacted 1@1 + 5@2 files => 8721546 bytes
+2026/06/02-18:38:28.537 5d7c compacted to: files[ 0 0 4 0 0 0 0 ]
+2026/06/02-19:57:41.641 b438 Level-0 table #353: started
+2026/06/02-19:57:41.685 b438 Level-0 table #353: 1032573 bytes OK
+2026/06/02-19:57:41.687 b438 Delete type=2 #338
+2026/06/02-19:57:41.688 b438 Delete type=2 #339
+2026/06/02-19:57:41.688 b438 Delete type=2 #342
+2026/06/02-19:57:41.688 b438 Delete type=2 #343
+2026/06/02-19:57:41.688 b438 Delete type=2 #344
+2026/06/02-19:57:41.688 b438 Delete type=0 #346
+2026/06/02-19:57:41.688 b438 Delete type=2 #347
+2026/06/02-20:01:52.937 b438 Compacting 1@1 + 4@2 files
+2026/06/02-20:01:53.090 b438 Generated table #354@1: 66146 keys, 2255968 bytes
+2026/06/02-20:01:53.149 b438 Generated table #355@1: 21967 keys, 2222235 bytes
+2026/06/02-20:01:53.165 b438 Generated table #356@1: 146 keys, 2135260 bytes
+2026/06/02-20:01:53.200 b438 Generated table #357@1: 34491 keys, 2146539 bytes
+2026/06/02-20:01:53.200 b438 Compacted 1@1 + 4@2 files => 8760002 bytes
+2026/06/02-20:01:53.201 b438 compacted to: files[ 0 0 4 0 0 0 0 ]
+2026/06/02-20:01:53.201 b438 Delete type=2 #348
+2026/06/02-20:01:53.201 b438 Delete type=2 #349
+2026/06/02-20:01:53.201 b438 Delete type=2 #350
+2026/06/02-20:01:53.201 b438 Delete type=2 #351
+2026/06/02-20:01:53.202 b438 Delete type=2 #353
