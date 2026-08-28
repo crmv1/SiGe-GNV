@@ -46,6 +46,23 @@
 }
 .btn-logout:hover { background: rgba(255,255,255,0.18); }
 
+/* ===== PESTAÑAS ===== */
+.dash-tabs {
+  display: flex; gap: 8px;
+  padding: 12px 24px 0;
+  max-width: 1300px; margin: 0 auto;
+}
+.dash-tab {
+  padding: 9px 22px; border-radius: 10px 10px 0 0;
+  border: none; cursor: pointer;
+  background: transparent; color: #94a3b8;
+  font-size: 0.88rem; font-weight: 700;
+  border-bottom: 3px solid transparent;
+  transition: color 0.15s, background 0.15s;
+}
+.dash-tab:hover { color: #1d4ed8; background: rgba(255,255,255,0.5); }
+.dash-tab-active { color: #0284c7; background: #fff; border-bottom-color: #0284c7; }
+
 /* ===== MAIN ===== */
 .dash-main { padding: 24px; max-width: 1300px; margin: 0 auto; }
 
