@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import VehiculoForm from '../components/VehiculoForm';
+import InventoryPage from './InventoryPage';
 import {
   getVehiculos, addVehiculo, updateVehiculo,
   deleteVehiculo, dispararRecordatorios,
@@ -47,6 +48,7 @@ export default function DashboardPage() {
   const [editing, setEditing]     = useState(null);   // vehiculo a editar
   const [toast, setToast]         = useState('');
   const [confirm, setConfirm]     = useState(null);   // id a eliminar
+  const [view, setView]           = useState('vehiculos');
 
   const isAdmin = user?.rol === 'administrador';
 
@@ -131,8 +133,27 @@ export default function DashboardPage() {
         </div>
       </header>
 
+      {/* ===== PESTAÑAS ===== */}
+      <div className="dash-tabs">
+        <button
+          className={`dash-tab ${view === 'vehiculos' ? 'dash-tab-active' : ''}`}
+          onClick={() => setView('vehiculos')}
+        >
+          🚗 Vehículos
+        </button>
+        <button
+          className={`dash-tab ${view === 'inventario' ? 'dash-tab-active' : ''}`}
+          onClick={() => setView('inventario')}
+        >
+          📦 Inventario
+        </button>
+      </div>
+
       {/* ===== CONTENIDO ===== */}
-      <main className="dash-main">
+      {view === 'inventario' ? (
+        <InventoryPage user={user} />
+      ) : (
+        <main className="dash-main">
         {/* Toolbar */}
         <div className="dash-toolbar">
           <div className="toolbar-left">
@@ -225,6 +246,7 @@ export default function DashboardPage() {
           )}
         </div>
       </main>
+      )}
 
       {/* ===== MODAL FORMULARIO ===== */}
       {(showForm || editing) && (
