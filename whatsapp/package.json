@@ -5,11 +5,11 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev":   "nodemon server.js"
+    "dev": "nodemon server.js"
   },
   "dependencies": {
-    "@wppconnect-team/wppconnect": "^1.32.0",
-    "axios":   "^1.7.2",
+    "@wppconnect-team/wppconnect": "^2.3.1",
+    "axios": "^1.7.2",
     "express": "^4.19.2"
   },
   "devDependencies": {

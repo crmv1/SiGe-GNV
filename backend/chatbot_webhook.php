@@ -24,7 +24,7 @@ $placa = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', trim($mensaje)));
 
 $db   = getDB();
 $stmt = $db->prepare(
-    'SELECT nombre, apellido, placa,
+    'SELECT placa,
             DATE_FORMAT(fecha_recalificacion, "%d/%m/%Y") AS recal,
             DATE_FORMAT(fecha_inspeccion,     "%d/%m/%Y") AS insp
      FROM vehiculos WHERE placa = ? LIMIT 1'
@@ -36,7 +36,6 @@ if ($v) {
     // Encontró el vehículo — respuesta estática + contexto para IA
     $respuesta =
         "🚗 *Consulta GNV — Placa: {$v['placa']}*\n\n" .
-        "Propietario: {$v['nombre']} {$v['apellido']}\n" .
         "📅 Recalificación: {$v['recal']}\n" .
         "🔍 Inspección anual: {$v['insp']}\n\n" .
         "¿Tienes alguna pregunta sobre tu vehículo? Puedo ayudarte. 😊";
@@ -46,8 +45,6 @@ if ($v) {
         'status'    => 'ok',
         'respuesta' => $respuesta,
         'vehiculo'  => [
-            'nombre'   => $v['nombre'],
-            'apellido' => $v['apellido'],
             'placa'    => $v['placa'],
             'recal'    => $v['recal'],
             'insp'     => $v['insp'],
