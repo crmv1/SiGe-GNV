@@ -1,18 +1,81 @@
-/* index.css — Reset global */
+/* index.css — Tokens de diseño globales y estilos base */
+:root {
+  /* Paleta del taller (azul marino / azul / verde) */
+  --c-ink:        #0f172a;
+  --c-body:       #eef2f7;
+  --c-card:       #ffffff;
+  --c-border:     #e2e8f0;
+  --c-muted:      #64748b;
+  --c-soft:       #94a3b8;
+
+  --c-blue:       #0284c7;
+  --c-blue-light: #0ea5e9;
+  --c-green:      #059669;
+  --c-green-light:#10b981;
+  --c-danger:     #dc2626;
+  --c-orange:     #d97706;
+
+  --grad-brand:  linear-gradient(135deg, #0f2027 0%, #203a43 55%, #2c5364 100%);
+  --grad-logo:   linear-gradient(135deg, #0ea5e9 0%, #10b981 100%);
+  --grad-green:  linear-gradient(135deg, #059669 0%, #10b981 100%);
+  --grad-blue:   linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
+  --grad-orange: linear-gradient(135deg, #ea580c 0%, #f59e0b 100%);
+  --grad-navy:   linear-gradient(135deg, #1e3a5f 0%, #2c5364 100%);
+
+  --shadow-sm: 0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.1);
+  --shadow-md: 0 6px 20px rgba(16,24,40,.10);
+  --shadow-lg: 0 20px 44px rgba(16,24,40,.18);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+  --font: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
 *, *::before, *::after { box-sizing: border-box; }
 
-html, body, #root {
-  margin: 0; padding: 0; height: 100%;
-}
+html, body, #root { margin: 0; padding: 0; height: 100%; }
 
 body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: var(--font);
+  font-size: 15px;
+  background: var(--c-body);
+  color: var(--c-ink);
   -webkit-font-smoothing: antialiased;
-  background: #f0f4f8;
 }
 
-/* Scrollbar personalizado (Chrome/Edge) */
-::-webkit-scrollbar        { width: 6px; height: 6px; }
+button, input, select, textarea { font-family: inherit; }
+
+::-webkit-scrollbar        { width: 9px; height: 9px; }
 ::-webkit-scrollbar-track  { background: #f1f5f9; }
-::-webkit-scrollbar-thumb  { background: #94a3b8; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #64748b; }
+::-webkit-scrollbar-thumb  { background: #c3cad4; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* ===== LOGO VC GAS ===== */
+.logo {
+  display: inline-flex; align-items: center; gap: 12px;
+}
+.logo-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--grad-logo);
+  box-shadow: 0 6px 18px rgba(16,185,129,.35), 0 2px 8px rgba(2,132,199,.25);
+  flex: none;
+}
+.logo-text {
+  display: flex; align-items: baseline; gap: 6px;
+  font-size: 1.2rem; font-weight: 800; letter-spacing: .05em;
+  color: var(--c-ink); line-height: 1; white-space: nowrap;
+}
+.logo-text .sub {
+  font-size: .6rem; font-weight: 700; letter-spacing: .28em;
+  color: var(--c-soft); text-transform: uppercase;
+}
+.logo--inverse .logo-text { color: #fff; }
+.logo--inverse .logo-text .sub { color: rgba(255,255,255,.6); }
+.logo--inverse .logo-badge { box-shadow: 0 6px 20px rgba(14,165,233,.45); }
+
+.welcome-logo {
+  filter: drop-shadow(0 10px 24px rgba(14,165,233,.35));
+}
