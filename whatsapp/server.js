@@ -3,6 +3,7 @@
 const wppconnect = require('@wppconnect-team/wppconnect');
 const express = require('express');
 const axios = require('axios');
+const fs = require('fs');
 
 const app = express();
 app.use(express.json());
@@ -92,7 +93,7 @@ async function processQueue() {
       item.resolve({ status: 'success' });
 
     } catch (err) {
-      console.error('[Cola] Error:', err.message);
+      console.error('[Cola] Error:', err);
       item.reject(err);
     }
 
@@ -385,6 +386,13 @@ wppconnect.create({
     console.log('\n================ QR WHATSAPP ================\n');
     console.log(asciiQR);
     console.log('\nEscanea este QR desde WhatsApp > Dispositivos vinculados.\n');
+
+    try {
+      fs.writeFileSync('C:\\xampp\\htdocs\\qr_gnv.png', Buffer.from(base64Qr.replace(/^data:image\/png;base64,/, ''), 'base64'));
+      console.log('[wpp.connect] QR guardado en http://localhost/qr_gnv.png (abrir y escanear).');
+    } catch (e) {
+      console.error('[wpp.connect] No se pudo guardar el QR:', e.message);
+    }
   },
 
   statusFind: (statusSession) => {
