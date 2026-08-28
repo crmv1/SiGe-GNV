@@ -138,10 +138,11 @@ Proyecto/
 │       ├── context/
 │       │   └── AuthContext.jsx   # Contexto global de autenticación
 │       ├── pages/
-│       │   ├── LoginPage.jsx     # Pantalla de inicio de sesión
-│       │   ├── DashboardPage.jsx # Panel principal (tabs: Vehículos / Inventario)
+│       │   ├── LoginPage.jsx     # Login profesional con panel de marca
+│       │   ├── DashboardPage.jsx # Layout con sidebar + vista Dashboard (KPIs)
 │       │   └── InventoryPage.jsx # Vista del inventario de repuestos
 │       └── components/
+│           ├── Logo.jsx              # Logo "VC GAS" reutilizable
 │           ├── VehiculoForm.jsx      # Modal alta/edición de vehículo
 │           ├── InventarioForm.jsx    # Modal alta/edición de artículo
 │           ├── MovimientoForm.jsx    # Modal registro entrada/salida
