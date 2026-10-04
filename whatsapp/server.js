@@ -4,17 +4,36 @@ const wppconnect = require('@wppconnect-team/wppconnect');
 const express = require('express');
 const axios = require('axios');
 const fs = require('fs');
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const app = express();
 app.use(express.json());
 
 const SESSION = 'gnv-taller';
-const PORT = 21465;
+const PORT = process.env.WPPCONNECT_PORT || 21465;
 
-const BACKEND_URL = 'http://127.0.0.1/backend';
+// API Node.js/Express (produccion: https://...)
+// Esta instancia local NO se conecta a MariaDB ni a PHP.
+// Solo consume endpoints protegidos por API Key.
+const API_URL = process.env.API_URL || 'http://localhost:3100';
+const API_KEY = process.env.WHATSAPP_INTEGRATION_API_KEY || '';
 
-const OLLAMA_URL = 'http://127.0.0.1:11434';
-const OLLAMA_MODEL = 'vcgas-bot';
+if (!API_KEY) {
+  console.error('[config] Falta WHATSAPP_INTEGRATION_API_KEY en el .env. Cerrando.');
+  console.error('          Copiar .env.example a .env y completar la clave.');
+  process.exit(1);
+}
+
+const OLLAMA_URL = process.env.OLLAMA_URL || 'http://127.0.0.1:11434';
+const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'vcgas-bot';
+
+// Cada cuanto consulta la API las notificaciones pendientes.
+const POLL_MS = Number(process.env.POLL_INTERVAL_MS) || 60000;
+
+// Donde guardar el QR. Antes apuntaba a C:\xampp\htdocs, que ya no
+// se usa. Si se deja vacio se guarda en whatsapp/qr_gnv.png.
+const QR_PATH = process.env.QR_PATH || '';
 
 // Ignorar mensajes antiguos
 const BOT_STARTED_AT = Math.floor(Date.now() / 1000);
@@ -314,16 +333,16 @@ async function procesarMensaje(from, texto) {
   let respuesta = null;
 
   try {
-    // 1. Primero consultar PHP/MySQL para placas
+    // 1. Primero consultar la API online para resolver placas
     const res = await axios.post(
-      `${BACKEND_URL}/chatbot_webhook.php`,
+      `${API_URL}/api/public/chatbot`,
       {
-        event: 'onmessage',
         from,
         text: texto,
         body: texto
       },
       {
+        headers: { 'X-API-Key': API_KEY },
         timeout: 15000
       }
     );
@@ -331,9 +350,9 @@ async function procesarMensaje(from, texto) {
     const data = res.data;
     respuesta = data.respuesta ?? null;
 
-    // Si encontró placa, responde con datos reales de MySQL
+    // Si encontró placa, responde con datos reales de MariaDB
     if (respuesta) {
-      console.log('[BD] Respuesta desde MySQL');
+      console.log('[BD] Respuesta desde la API online');
       await enqueueMessage(from, respuesta);
       return;
     }
@@ -388,8 +407,9 @@ wppconnect.create({
     console.log('\nEscanea este QR desde WhatsApp > Dispositivos vinculados.\n');
 
     try {
-      fs.writeFileSync('C:\\xampp\\htdocs\\qr_gnv.png', Buffer.from(base64Qr.replace(/^data:image\/png;base64,/, ''), 'base64'));
-      console.log('[wpp.connect] QR guardado en http://localhost/qr_gnv.png (abrir y escanear).');
+      const destino = QR_PATH || path.join(__dirname, 'qr_gnv.png');
+      fs.writeFileSync(destino, Buffer.from(base64Qr.replace(/^data:image\/png;base64,/, ''), 'base64'));
+      console.log(`[wpp.connect] QR guardado en ${destino}`);
     } catch (e) {
       console.error('[wpp.connect] No se pudo guardar el QR:', e.message);
     }
@@ -487,7 +507,7 @@ function startServer(client) {
     }, BUFFER_TIME);
   });
 
-  // Endpoint para enviar mensajes desde PHP/recordatorios
+  // Endpoint para enviar mensajes desde la API online
   app.post('/api/:session/send-message', async (req, res) => {
     const { phone, message: msg } = req.body;
 
@@ -540,11 +560,89 @@ function startServer(client) {
   app.listen(PORT, () => {
     console.log(`\nServidor en http://localhost:${PORT}`);
     console.log(`IA híbrida local: Ollama (${OLLAMA_MODEL})`);
-    console.log(`Base de datos: PHP/MySQL para placas`);
+    console.log(`API online: ${API_URL}`);
     console.log(`Cola: ${DELAY_MIN / 1000}-${DELAY_MAX / 1000}s entre mensajes`);
     console.log(`Descanso: cada ${SLEEP_AFTER_MIN}-${SLEEP_AFTER_MAX} mensajes`);
     console.log(`Dormir: ${SLEEP_MIN / 60000}-${SLEEP_MAX / 60000} minutos\n`);
+
+    iniciarPollerNotificaciones();
   });
+}
+
+// ============================================================
+// NOTIFICACIONES PROGRAMADAS
+// ============================================================
+//
+// Antes el backend PHP generaba y enviaba los recordatorios
+// llamando directo a este servidor por HTTP.
+//
+// Ahora el backend solo GENERA las notificaciones y las guarda
+// en MariaDB. Este proceso las consume por la API y reporta el
+// resultado. Asi la base de datos es la unica fuente de verdad.
+//
+// Esta instancia NO tiene credenciales de MariaDB: solo la API Key.
+
+// Cliente HTTP con la API Key en cada peticion.
+function apiClient() {
+  return axios.create({
+    baseURL: API_URL,
+    headers: { 'X-API-Key': API_KEY },
+    timeout: 20000
+  });
+}
+
+async function procesarNotificacionesPendientes() {
+  const http = apiClient();
+
+  try {
+    const res = await http.get('/api/integrations/whatsapp/pendientes?limite=5');
+    const notificaciones = res.data?.notificaciones || [];
+
+    if (notificaciones.length === 0) return;
+
+    console.log(`[Recordatorios] ${notificaciones.length} pendiente(s) en la API`);
+
+    for (const n of notificaciones) {
+      const numero = String(n.telefono || '').replace(/[^0-9]/g, '');
+
+      if (!numero) {
+        await http.post(`/api/integrations/whatsapp/notificaciones/${n.id_notificacion}/error`, {
+          detalle: 'La notificacion no tiene telefono'
+        }).catch(() => {});
+        continue;
+      }
+
+      try {
+        // enqueueMessage respeta el retardo anti-baneo: no se salta.
+        await enqueueMessage(`${numero}@c.us`, n.mensaje);
+
+        await http.post(`/api/integrations/whatsapp/notificaciones/${n.id_notificacion}/enviada`);
+
+        console.log(`[Recordatorios] Enviada #${n.id_notificacion} (${n.tipo})`);
+
+      } catch (err) {
+        console.error(`[Recordatorios] Fallo #${n.id_notificacion}:`, err.message);
+
+        await http.post(`/api/integrations/whatsapp/notificaciones/${n.id_notificacion}/error`, {
+          detalle: err.message
+        }).catch(() => {});
+      }
+    }
+
+  } catch (err) {
+    // Si la API no responde, se reintenta en el siguiente ciclo.
+    // No se marca ninguna notificacion: asi no se pierden avisos.
+    console.error('[Recordatorios] No se pudo consultar la API:', err.message);
+  }
+}
+
+function iniciarPollerNotificaciones() {
+  setTimeout(async () => {
+    await procesarNotificacionesPendientes();
+    setInterval(procesarNotificacionesPendientes, POLL_MS);
+  }, 10000);
+
+  console.log(`Poller de notificaciones: cada ${Math.round(POLL_MS / 1000)}s`);
 }
 
 // ============================================================

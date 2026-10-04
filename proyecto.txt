@@ -1,0 +1,1188 @@
+Quiero modificar mi proyecto SIGE-GNV VC GAS para migrar la base de datos actual desde MySQL/XAMPP a MariaDB y dejar de depender de XAMPP como base principal.
+
+IMPORTANTE:
+No quiero cambiar a PostgreSQL, Firebase, Supabase ni otra tecnología.
+
+Quiero utilizar MariaDB como base de datos principal del sistema.
+
+La arquitectura final debe ser:
+
+React Web
+        \
+         \
+      Node.js + Express ONLINE
+               |
+               |
+            MariaDB
+               |
+         base online
+         /
+        /
+React Native
+
+Además:
+
+- WPConnect/WhatsApp seguirá ejecutándose localmente en una computadora del taller.
+- WPConnect debe comunicarse con el backend online mediante API.
+- React Web y React Native deben compartir el mismo backend.
+- Toda la información principal debe estar en MariaDB.
+
+==================================================
+1. REVISAR PRIMERO EL PROYECTO ACTUAL
+==================================================
+
+Antes de modificar cualquier archivo:
+
+1. Revisa todo el backend existente.
+2. Revisa package.json.
+3. Busca todas las conexiones actuales a MySQL.
+4. Busca referencias a:
+   - XAMPP
+   - localhost
+   - 127.0.0.1
+   - mysql
+   - mysql2
+   - puerto 3306
+5. Identifica las tablas reales.
+6. Identifica claves primarias.
+7. Identifica claves foráneas.
+8. Identifica índices.
+9. Identifica triggers si existen.
+10. Identifica funciones o procedimientos almacenados si existen.
+11. No inventes nombres de tablas.
+12. No elimines datos.
+13. No cambies nombres sin necesidad.
+
+Primero dame un resumen breve de qué encontraste.
+
+Después realiza los cambios necesarios.
+
+==================================================
+2. OBJETIVO DE LA MIGRACIÓN
+==================================================
+
+Actualmente la base se ejecuta mediante MySQL dentro de XAMPP.
+
+Quiero migrarla a MariaDB.
+
+La nueva base será la fuente principal del sistema.
+
+No quiero mantener permanentemente:
+
+MySQL local
++
+MariaDB online
+
+La base oficial debe ser MariaDB.
+
+==================================================
+3. COMPATIBILIDAD MYSQL -> MARIADB
+==================================================
+
+Analiza la compatibilidad antes de importar.
+
+Revisar:
+
+- ENGINE
+- AUTO_INCREMENT
+- FOREIGN KEYS
+- INDEXES
+- UNIQUE
+- DATETIME
+- TIMESTAMP
+- DATE
+- DECIMAL
+- ENUM
+- JSON
+- COLLATION
+- CHARACTER SET
+- TRIGGERS
+- PROCEDURES
+- FUNCTIONS
+
+Si existe alguna incompatibilidad entre MySQL y MariaDB:
+
+NO la cambies silenciosamente.
+
+Explícame:
+
+- qué encontraste;
+- por qué no es compatible;
+- qué cambio propones.
+
+==================================================
+4. MOTOR Y CODIFICACIÓN
+==================================================
+
+Preferir:
+
+ENGINE=InnoDB
+
+y:
+
+utf8mb4
+
+si la estructura actual lo permite.
+
+Mantener claves foráneas correctamente.
+
+No eliminar restricciones para facilitar la importación.
+
+==================================================
+5. CONEXIÓN DESDE NODE.JS
+==================================================
+
+Quiero que Node.js + Express se conecte a MariaDB.
+
+Utiliza una librería compatible.
+
+Puede ser:
+
+mysql2/promise
+
+si el proyecto ya usa mysql2 y funciona correctamente con MariaDB,
+
+o:
+
+mariadb
+
+si consideras que conviene migrar al driver oficial de MariaDB.
+
+Antes de cambiar de driver, revisa el proyecto existente.
+
+No cambies mysql2 solo por cambiarlo si no existe una razón técnica.
+
+==================================================
+6. MÓDULO DE CONEXIÓN
+==================================================
+
+Centralizar la conexión.
+
+Por ejemplo:
+
+src/config/database.js
+
+o una ubicación equivalente según la estructura actual.
+
+No tener conexiones repetidas en múltiples archivos.
+
+==================================================
+7. VARIABLES DE ENTORNO
+==================================================
+
+Crear o actualizar:
+
+.env.example
+
+Usar:
+
+PORT=
+
+DB_HOST=
+DB_PORT=3306
+DB_USER=
+DB_PASSWORD=
+DB_NAME=
+DB_SSL=
+
+JWT_SECRET=
+JWT_EXPIRES_IN=
+
+WHATSAPP_INTEGRATION_API_KEY=
+
+No colocar credenciales reales dentro del repositorio.
+
+Agregar:
+
+.env
+
+a .gitignore.
+
+==================================================
+8. POOL DE CONEXIONES
+==================================================
+
+Utilizar un pool de conexiones.
+
+Configurar de forma razonable para un proyecto pequeño.
+
+Ejemplo conceptual:
+
+pool = createPool(...)
+
+No abrir una nueva conexión desde cero en cada petición.
+
+==================================================
+9. MARIADB LOCAL DURANTE DESARROLLO
+==================================================
+
+También quiero poder desarrollar localmente sin depender de XAMPP.
+
+Preparar el proyecto para trabajar con:
+
+MariaDB Server instalado directamente
+
+o
+
+MariaDB mediante Docker si después deseo utilizarlo.
+
+No hacer Docker obligatorio si todavía no está instalado.
+
+La aplicación debe funcionar simplemente cambiando variables de entorno.
+
+==================================================
+10. PRODUCCIÓN
+==================================================
+
+En producción la arquitectura debe quedar:
+
+React Web
+        |
+        ▼
+Node.js + Express
+        |
+        ▼
+MariaDB online
+
+y:
+
+React Native
+        |
+        ▼
+Node.js + Express
+        |
+        ▼
+MariaDB online
+
+==================================================
+11. XAMPP
+==================================================
+
+XAMPP dejará de ser requisito para producción.
+
+No borrar mi base antigua inmediatamente.
+
+Utilizarla solamente como origen para la migración y como respaldo temporal.
+
+==================================================
+12. HACER BACKUP ANTES DE CAMBIAR
+==================================================
+
+Antes de cualquier migración:
+
+crear instrucciones para generar un backup completo.
+
+Crear:
+
+docs/MIGRACION_MARIADB.md
+
+Explicar:
+
+- exportación desde phpMyAdmin;
+- exportación mediante mysqldump;
+- estructura + datos;
+- cómo conservar claves foráneas;
+- cómo guardar backup.sql.
+
+No ejecutar comandos destructivos.
+
+==================================================
+13. EXPORTACIÓN DESDE XAMPP
+==================================================
+
+Documentar paso a paso:
+
+1. Abrir phpMyAdmin.
+2. Seleccionar la base de SIGE-GNV.
+3. Exportar.
+4. Elegir SQL.
+5. Exportar estructura y datos.
+6. Guardar backup.sql.
+
+También dar ejemplo con mysqldump.
+
+No escribir mi contraseña real.
+
+==================================================
+14. IMPORTACIÓN A MARIADB
+==================================================
+
+Preparar instrucciones para importar:
+
+backup.sql
+
+a MariaDB.
+
+Ejemplo conceptual:
+
+mariadb -h HOST -u USER -p DATABASE < backup.sql
+
+o:
+
+mysql -h HOST -u USER -p DATABASE < backup.sql
+
+según la herramienta disponible.
+
+No guardar contraseñas en scripts.
+
+==================================================
+15. VERIFICACIÓN DE LA MIGRACIÓN
+==================================================
+
+Después de importar, comparar:
+
+- cantidad de clientes;
+- cantidad de usuarios;
+- cantidad de vehículos;
+- cantidad de cilindros;
+- cantidad de inspecciones;
+- cantidad de recalificaciones;
+- cantidad de servicios.
+
+Además verificar:
+
+- claves foráneas;
+- registros huérfanos;
+- índices;
+- relaciones.
+
+==================================================
+16. SCRIPT DE VERIFICACIÓN
+==================================================
+
+Crear:
+
+scripts/verify-database.js
+
+Debe conectarse a MariaDB y mostrar únicamente conteos.
+
+Ejemplo:
+
+usuarios: 30
+clientes: 120
+vehiculos: 145
+cilindros: 160
+inspecciones: 420
+recalificaciones: 87
+
+No mostrar:
+
+nombres
+teléfonos
+CI
+correos
+datos personales
+
+==================================================
+17. SCHEMA
+==================================================
+
+Crear o actualizar:
+
+database/schema.sql
+
+Debe representar la estructura actual compatible con MariaDB.
+
+No incluir información personal.
+
+==================================================
+18. MIGRACIONES DE BASE DE DATOS
+==================================================
+
+Crear:
+
+database/migrations/
+
+si todavía no existe una estrategia.
+
+No necesito una solución empresarial compleja.
+
+Pero quiero poder aplicar cambios futuros de forma ordenada.
+
+Ejemplo:
+
+001_initial_schema.sql
+002_add_users.sql
+003_add_activation_codes.sql
+004_add_push_devices.sql
+005_add_notifications.sql
+
+==================================================
+19. TABLAS PRINCIPALES
+==================================================
+
+La base debe contemplar las tablas reales existentes equivalentes a:
+
+usuarios
+clientes
+vehiculos
+cilindros
+inspecciones
+recalificaciones
+servicios
+
+y para la app móvil:
+
+codigos_activacion
+dispositivos_push
+notificaciones
+
+IMPORTANTE:
+
+Antes de crear una tabla:
+
+revisar si ya existe una equivalente.
+
+No duplicar información.
+
+==================================================
+20. USUARIOS
+==================================================
+
+Las cuentas de clientes deben almacenarse en MariaDB.
+
+Campos conceptuales:
+
+id_usuario
+email
+password_hash
+rol
+estado
+fecha_creacion
+
+Roles:
+
+ADMINISTRADOR
+TECNICO
+CLIENTE
+
+==================================================
+21. CLIENTES
+==================================================
+
+El cliente puede existir sin usuario.
+
+Ejemplo conceptual:
+
+clientes.id_usuario = NULL
+
+hasta que active su cuenta móvil.
+
+Mantener esta posibilidad.
+
+==================================================
+22. ACTIVACIÓN DE CUENTAS
+==================================================
+
+Crear/adaptar:
+
+codigos_activacion
+
+Campos conceptuales:
+
+id
+id_cliente
+codigo_hash
+fecha_creacion
+fecha_expiracion
+usado
+fecha_uso
+
+El código:
+
+- debe ser de un solo uso;
+- debe expirar;
+- debe guardarse preferentemente como hash.
+
+==================================================
+23. VEHÍCULOS
+==================================================
+
+Mantener relación:
+
+cliente
+↓
+vehículo
+
+Cada vehículo debe tener una placa única o una restricción adecuada según la estructura real.
+
+No asumir una restricción si la base actual permite otro comportamiento; primero revisar.
+
+==================================================
+24. CILINDROS
+==================================================
+
+Mantener relación:
+
+vehículo
+↓
+cilindro
+
+La recalificación pertenece al cilindro.
+
+No confundirla con la inspección anual del vehículo.
+
+==================================================
+25. INSPECCIONES
+==================================================
+
+La inspección anual debe permanecer asociada al vehículo.
+
+Guardar correctamente:
+
+fecha_inspeccion
+proxima_inspeccion
+resultado
+estado
+
+según la estructura real.
+
+==================================================
+26. RECALIFICACIONES
+==================================================
+
+La recalificación debe asociarse al cilindro.
+
+Guardar:
+
+fecha_recalificacion
+proxima_recalificacion
+resultado
+estado
+
+según estructura existente.
+
+==================================================
+27. CONSULTA PÚBLICA DE PLACA
+==================================================
+
+Mantener endpoint:
+
+GET /api/public/consulta/placa/:placa
+
+Debe consultar MariaDB.
+
+Debe devolver únicamente:
+
+placa
+proxima_inspeccion
+estado_inspeccion
+proxima_recalificacion
+estado_recalificacion
+
+No devolver datos personales.
+
+==================================================
+28. CONSULTA SQL SEGURA
+==================================================
+
+No utilizar:
+
+SELECT *
+
+en endpoints públicos.
+
+Utilizar consultas parametrizadas.
+
+Ejemplo:
+
+WHERE placa = ?
+
+No concatenar directamente parámetros.
+
+==================================================
+29. LOGIN
+==================================================
+
+Mantener:
+
+bcrypt
+JWT
+
+La autenticación debe consultar MariaDB.
+
+Nunca almacenar contraseñas en texto plano.
+
+==================================================
+30. NOTIFICACIONES
+==================================================
+
+Guardar notificaciones en MariaDB.
+
+Tabla conceptual:
+
+notificaciones
+- id_notificacion
+- id_usuario
+- tipo
+- titulo
+- mensaje
+- fecha_programada
+- fecha_envio
+- estado
+- leida
+
+==================================================
+31. DISPOSITIVOS PUSH
+==================================================
+
+Guardar Expo Push Token en MariaDB.
+
+Tabla:
+
+dispositivos_push
+
+Campos:
+
+id_dispositivo
+id_usuario
+expo_push_token
+plataforma
+activo
+fecha_registro
+
+==================================================
+32. NOTIFICACIONES PROGRAMADAS
+==================================================
+
+Mantener lógica para:
+
+30 días antes
+15 días antes
+7 días antes
+
+de:
+
+- inspección;
+- recalificación.
+
+Usar node-cron o mecanismo equivalente.
+
+La tarea debe consultar MariaDB online.
+
+==================================================
+33. WPCONNECT LOCAL
+==================================================
+
+WPConnect seguirá ejecutándose localmente.
+
+Pero NO debe depender de XAMPP.
+
+Debe funcionar así:
+
+WPConnect local
+       |
+       | HTTPS
+       ▼
+Node.js/Express online
+       |
+       ▼
+MariaDB online
+
+==================================================
+34. WPCONNECT NO DEBE CONECTARSE DIRECTO A MARIADB
+==================================================
+
+No colocar credenciales de MariaDB dentro del proyecto WPConnect.
+
+WPConnect debe consumir endpoints protegidos.
+
+==================================================
+35. ENDPOINTS WHATSAPP
+==================================================
+
+Mantener o crear:
+
+GET /api/integrations/whatsapp/pendientes
+
+POST /api/integrations/whatsapp/notificaciones/:id/enviada
+
+POST /api/integrations/whatsapp/notificaciones/:id/error
+
+==================================================
+36. API KEY WPCONNECT
+==================================================
+
+Proteger endpoints mediante:
+
+WHATSAPP_INTEGRATION_API_KEY
+
+No colocar esa clave dentro de React Native.
+
+==================================================
+37. WEB REACT
+==================================================
+
+La aplicación web debe consumir únicamente la API.
+
+No conectar React directamente con MariaDB.
+
+Debe funcionar:
+
+React
+↓
+API
+↓
+MariaDB
+
+==================================================
+38. REACT NATIVE
+==================================================
+
+La app móvil también:
+
+React Native
+↓
+API
+↓
+MariaDB
+
+Nunca:
+
+React Native
+↓
+MariaDB
+
+==================================================
+39. ENDPOINT HEALTH
+==================================================
+
+Crear:
+
+GET /api/health
+
+Respuesta segura:
+
+{
+  "status": "ok",
+  "database": "connected"
+}
+
+Si MariaDB falla:
+
+{
+  "status": "error",
+  "database": "disconnected"
+}
+
+No devolver credenciales ni detalles internos.
+
+==================================================
+40. HTTPS
+==================================================
+
+La API online debe usar HTTPS.
+
+La app de Google Play debe apuntar a una URL HTTPS.
+
+==================================================
+41. CORS
+==================================================
+
+Configurar CORS mediante variable de entorno.
+
+Ejemplo:
+
+CORS_ORIGINS=
+
+No dejar "*" en producción sin necesidad.
+
+==================================================
+42. LOGS
+==================================================
+
+Nunca imprimir:
+
+- DB_PASSWORD
+- JWT_SECRET
+- tokens completos
+- contraseñas
+- códigos de activación
+- datos personales sensibles
+
+==================================================
+43. ERRORES
+==================================================
+
+No devolver detalles SQL al frontend.
+
+Ejemplo incorrecto:
+
+ER_NO_SUCH_TABLE
+Access denied
+SQL syntax error
+
+Responder:
+
+{
+  "success": false,
+  "message": "No fue posible procesar la solicitud."
+}
+
+Registrar internamente el error técnico.
+
+==================================================
+44. BACKUPS
+==================================================
+
+Documentar copias de seguridad de MariaDB.
+
+Agregar en:
+
+docs/MIGRACION_MARIADB.md
+
+sección:
+
+BACKUP
+
+Incluir procedimiento para:
+
+- backup manual;
+- restauración;
+- validación.
+
+==================================================
+45. MARIADB ONLINE
+==================================================
+
+Quiero que el código funcione con cualquier proveedor MariaDB compatible.
+
+No quiero depender de un proveedor específico.
+
+Las credenciales deben cambiar únicamente mediante:
+
+.env
+
+Por ejemplo:
+
+DB_HOST=
+DB_PORT=
+DB_USER=
+DB_PASSWORD=
+DB_NAME=
+
+==================================================
+46. SSL
+==================================================
+
+Preparar:
+
+DB_SSL=true
+
+cuando el proveedor MariaDB online lo requiera.
+
+Si requiere certificado CA:
+
+dejar soporte para configurar la ruta o contenido del certificado de forma segura.
+
+No desactivar validación TLS globalmente.
+
+==================================================
+47. PUERTO
+==================================================
+
+Node debe utilizar:
+
+process.env.PORT
+
+Ejemplo:
+
+const PORT = process.env.PORT || 3100;
+
+No depender únicamente de 3100 en producción.
+
+==================================================
+48. SCRIPTS
+==================================================
+
+Agregar scripts útiles:
+
+npm run dev
+npm start
+npm run db:test
+npm run db:verify
+
+si no existen equivalentes.
+
+==================================================
+49. PRUEBA DE CONEXIÓN
+==================================================
+
+Crear un script:
+
+scripts/test-database.js
+
+Debe comprobar:
+
+- conexión;
+- versión de MariaDB;
+- base seleccionada.
+
+No mostrar credenciales.
+
+==================================================
+50. DETECTAR MARIADB
+==================================================
+
+El script de prueba debe permitir verificar que realmente se está utilizando MariaDB.
+
+Puede ejecutar:
+
+SELECT VERSION()
+
+y mostrar la versión sin información sensible.
+
+==================================================
+51. DESARROLLO LOCAL SIN XAMPP
+==================================================
+
+Documentar dos opciones:
+
+OPCIÓN A:
+MariaDB Server instalado localmente.
+
+OPCIÓN B:
+MariaDB mediante Docker.
+
+No hacer Docker obligatorio.
+
+==================================================
+52. OPCIÓN DOCKER
+==================================================
+
+Si Docker está disponible, puedes crear opcionalmente:
+
+docker-compose.yml
+
+con MariaDB para desarrollo.
+
+No incluir contraseñas reales.
+
+Usar variables de entorno.
+
+==================================================
+53. NO PERDER DATOS
+==================================================
+
+No ejecutar:
+
+DROP DATABASE
+DROP TABLE
+TRUNCATE
+
+sobre mi base existente.
+
+Si necesitas hacerlo en una base de pruebas:
+
+debe estar claramente aislada.
+
+==================================================
+54. ORDEN DE MIGRACIÓN
+==================================================
+
+Trabajar en este orden:
+
+FASE 1
+Auditar MySQL/XAMPP actual.
+
+FASE 2
+Crear backup.
+
+FASE 3
+Analizar compatibilidad MariaDB.
+
+FASE 4
+Preparar variables de entorno.
+
+FASE 5
+Preparar conexión MariaDB.
+
+FASE 6
+Crear MariaDB de prueba.
+
+FASE 7
+Importar backup.
+
+FASE 8
+Verificar tablas y conteos.
+
+FASE 9
+Verificar claves foráneas.
+
+FASE 10
+Probar backend.
+
+FASE 11
+Cambiar el sistema para utilizar MariaDB como base principal.
+
+FASE 12
+Probar React Web.
+
+FASE 13
+Probar React Native.
+
+FASE 14
+Probar WPConnect.
+
+FASE 15
+Documentar.
+
+==================================================
+55. RESULTADO FINAL ESPERADO
+==================================================
+
+Al terminar quiero:
+
+- MariaDB como base de datos principal;
+- XAMPP ya no necesario;
+- Node.js/Express conectado a MariaDB;
+- React Web consumiendo API;
+- React Native consumiendo API;
+- consulta pública por placa;
+- usuarios;
+- activación de cuentas;
+- inspecciones;
+- recalificaciones;
+- notificaciones;
+- tokens push;
+- WPConnect local mediante API;
+- variables de entorno;
+- backup;
+- documentación;
+- pruebas;
+- proyecto funcionando.
+
+==================================================
+56. MUY IMPORTANTE
+==================================================
+
+No quiero que solamente me indiques qué código debería escribir.
+
+Haz los cambios directamente sobre el proyecto.
+
+Si necesitas que yo cree una instancia MariaDB online:
+
+detente únicamente en esa parte y explícame:
+
+1. qué proveedor debo abrir;
+2. qué opción seleccionar;
+3. qué datos copiar;
+4. dónde ponerlos en .env.
+
+No me pidas pegar contraseñas reales en el chat.
+
+Una vez configurado el .env, continúa con la migración y pruebas.
+==================================================
+MÓDULO DE IA PARA RECONOCIMIENTO DE VEHÍCULOS
+==================================================
+
+El proyecto SIGE-GNV VC GAS también contempla un módulo de inteligencia artificial para apoyar la conversión de vehículos a GNV.
+
+OBJETIVO DEL MÓDULO:
+
+Un encargado de VC Gas capturará o cargará una imagen de un vehículo.
+
+El sistema deberá proponer:
+
+- marca del vehículo;
+- modelo del vehículo;
+- nivel de confianza de la predicción.
+
+Después de la predicción:
+
+1. El encargado debe confirmar o corregir la marca/modelo.
+2. El sistema consultará información referencial de la maletera.
+3. El sistema mostrará cilindros compatibles según los datos registrados.
+4. El sistema calculará un presupuesto aproximado de conversión utilizando los precios registrados por VC Gas.
+
+IMPORTANTE:
+
+La IA NO debe tomar decisiones definitivas.
+
+La predicción siempre debe ser validada por el encargado del taller.
+
+El presupuesto debe ser presentado como:
+
+"Estimación referencial"
+
+y no como presupuesto definitivo.
+
+==================================================
+REPOSITORIO EXTERNO
+==================================================
+
+Para este módulo utilizaré posteriormente un repositorio/modelo existente disponible públicamente en Internet.
+
+NO implementar todavía una solución definitiva de IA hasta que yo proporcione:
+
+- URL exacta del repositorio;
+- licencia;
+- modelo utilizado;
+- clases disponibles;
+- formato de entrada;
+- formato de salida;
+- pesos entrenados;
+- requisitos técnicos.
+
+Por ahora:
+
+1. Crear la arquitectura necesaria para poder integrar el módulo posteriormente.
+2. No entrenar un modelo nuevo sin que yo lo solicite.
+3. No elegir automáticamente otro repositorio.
+4. No copiar código de un repositorio externo sin revisar su licencia.
+5. No asumir que el modelo reconoce las marcas/modelos que necesito.
+
+==================================================
+ARQUITECTURA PREPARADA PARA IA
+==================================================
+
+Preparar el backend para poder agregar posteriormente:
+
+POST /api/ai/vehicle-recognition
+
+Entrada:
+
+imagen del vehículo.
+
+Respuesta futura:
+
+{
+  "success": true,
+  "data": {
+    "marca": "Toyota",
+    "modelo": "Corolla",
+    "confidence": 0.92
+  }
+}
+
+Por ahora puede utilizarse un mock si el módulo todavía no está integrado.
+
+Separar la lógica en una carpeta como:
+
+src/
+  ai/
+    vehicleRecognition/
+      vehicleRecognition.service.js
+      vehicleRecognition.controller.js
+
+o una estructura equivalente.
+
+No mezclar la lógica de IA con controladores generales.
+
+==================================================
+INTEGRACIÓN FUTURA
+==================================================
+
+La aplicación web para técnicos/administradores deberá poder:
+
+1. Abrir módulo "Conversión GNV".
+2. Capturar o cargar imagen.
+3. Enviar imagen al backend.
+4. Mostrar predicción.
+5. Permitir corregir marca/modelo.
+6. Consultar información de maletera.
+7. Consultar cilindros compatibles.
+8. Generar estimación de costo.
+9. Guardar resultado confirmado.
+
+No implementar todo esto hasta que yo entregue el repositorio/modelo definitivo.

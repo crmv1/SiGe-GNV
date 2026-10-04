@@ -1,0 +1,35 @@
+{
+  "name": "sige-gnv-vc-gas-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "API Node.js/Express para SIGE-GNV VC GAS. MariaDB como base de datos principal.",
+  "type": "module",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon --watch src src/server.js",
+    "db:test": "node scripts/test-database.js",
+    "db:verify": "node scripts/verify-database.js",
+    "db:demo": "node scripts/cargar-inventario-demo.js",
+    "test:inventario": "node scripts/test-inventario.js --escribir",
+    "user:password": "node scripts/set-user-password.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.4.0",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.0",
+    "mysql2": "^3.11.3",
+    "node-cron": "^4.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}

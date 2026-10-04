@@ -1,27 +1,45 @@
 // src/context/AuthContext.jsx
-import { createContext, useContext, useState, useEffect } from 'react';
-import { verificarSesion, logout as apiLogout } from '../api';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import {
+  verificarSesion,
+  logout as apiLogout,
+  setToken,
+  getToken,
+} from '../api';
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser]       = useState(null);   // { id, username, rol }
+  const [user, setUser]       = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Al montar, verificar si hay sesión activa en el servidor
+  // Al montar, comprobar si el token guardado sigue siendo valido.
   useEffect(() => {
+    if (!getToken()) {
+      setLoading(false);
+      return;
+    }
+
     verificarSesion()
-      .then(data => setUser(data.user))
-      .catch(() => setUser(null))
+      .then((data) => setUser(data.user))
+      .catch(() => {
+        // Token vencido o invalido: se limpia para no reintentarlo.
+        setToken(null);
+        setUser(null);
+      })
       .finally(() => setLoading(false));
   }, []);
 
-  const login = (userData) => setUser(userData);
+  // El backend devuelve el token en la respuesta del login.
+  const login = useCallback((userData, token) => {
+    setToken(token);
+    setUser(userData);
+  }, []);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     await apiLogout();
     setUser(null);
-  };
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, loading, login, logout }}>

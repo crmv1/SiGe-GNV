@@ -2,9 +2,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import VehiculoForm from '../components/VehiculoForm';
+import InventarioPage from './InventarioPage';
 import {
-  getVehiculos, addVehiculo, updateVehiculo,
-  deleteVehiculo, dispararRecordatorios,
+  getVehiculos, addVehiculo, updateVehiculo, deleteVehiculo,
 } from '../api';
 import './DashboardPage.css';
 
@@ -50,6 +50,11 @@ export default function DashboardPage() {
 
   const isAdmin = user?.rol === 'administrador';
 
+  // Que seccion de la aplicacion se esta mostrando. El
+  // inventario es una seccion mas de la misma pantalla: no hace
+  // falta una ruta nueva ni recargar la pagina.
+  const [vista, setVista] = useState('vehiculos');
+
   // ---------- Carga inicial --------------------------------
   const cargar = useCallback(async () => {
     setLoading(true);
@@ -65,8 +70,10 @@ export default function DashboardPage() {
 
   useEffect(() => {
     cargar();
-    // Disparar recordatorios silenciosamente al abrir el dashboard
-    dispararRecordatorios().catch(() => {});
+    // Los recordatorios ya no se disparan desde el navegador.
+    // Ahora los genera el backend con una tarea programada
+    // (src/jobs/recordatorios.job.js) contra MariaDB, y
+    // WPConnect los consume por la API.
   }, [cargar]);
 
   // ---------- Toast ----------------------------------------
@@ -84,7 +91,7 @@ export default function DashboardPage() {
   };
 
   const handleUpdate = async (form) => {
-    await updateVehiculo({ id: editing.id, ...form });
+    await updateVehiculo(editing.id, form);
     showToast('Vehículo actualizado correctamente ✔');
     setEditing(null);
     cargar();
@@ -123,6 +130,20 @@ export default function DashboardPage() {
           <span className="nav-title">GNV Taller</span>
         </div>
         <div className="nav-right">
+          <nav className="nav-secciones">
+            <button
+              className={vista === 'vehiculos' ? 'nav-seccion nav-seccion-on' : 'nav-seccion'}
+              onClick={() => setVista('vehiculos')}
+            >
+              🚗 Vehículos
+            </button>
+            <button
+              className={vista === 'inventario' ? 'nav-seccion nav-seccion-on' : 'nav-seccion'}
+              onClick={() => setVista('inventario')}
+            >
+              📦 Inventario
+            </button>
+          </nav>
           <span className={`role-badge role-${user?.rol}`}>
             {user?.rol === 'administrador' ? '🛡 Administrador' : '🔧 Técnico'}
           </span>
@@ -133,6 +154,10 @@ export default function DashboardPage() {
 
       {/* ===== CONTENIDO ===== */}
       <main className="dash-main">
+        {vista === 'inventario' ? (
+          <InventarioPage user={user} />
+        ) : (
+          <>
         {/* Toolbar */}
         <div className="dash-toolbar">
           <div className="toolbar-left">
@@ -224,6 +249,8 @@ export default function DashboardPage() {
             </table>
           )}
         </div>
+          </>
+        )}
       </main>
 
       {/* ===== MODAL FORMULARIO ===== */}

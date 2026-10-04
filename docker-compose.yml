@@ -1,0 +1,57 @@
+# ============================================================
+#  docker-compose.yml — MariaDB para DESARROLLO
+#
+#  Opcional. Solo si ya tienes Docker instalado.
+#  No es necesario para que el proyecto funcione: la app se
+#  conecta a cualquier MariaDB cambiando el .env.
+#
+#  USO
+#    docker compose up -d
+#    docker compose logs -f mariadb     # ver la clave temporal
+#    docker compose down                # parar
+#    docker compose down -v             # parar y BORRAR los datos
+#
+#  Sin credenciales reales: la clave se genera al arrancar y se
+#  imprime en el log. Para desarrollo unicamente.
+# ============================================================
+
+services:
+  mariadb:
+    image: mariadb:11
+    container_name: gnv-mariadb-dev
+    restart: unless-stopped
+
+    ports:
+      # 3307 en el host para no chocar con un MySQL de XAMPP
+      # que pueda seguir corriendo en 3306.
+      - "3307:3306"
+
+    environment:
+      # Contraseña solo para este entorno de desarrollo.
+      # En produccion va en el .env del servidor, nunca aqui.
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-gnv_dev_root}
+      MARIADB_DATABASE: ${DB_NAME:-gnv_taller}
+      MARIADB_USER: ${DB_USER:-gnv_app}
+      MARIADB_PASSWORD: ${DB_PASSWORD:-gnv_dev_local}
+      TZ: UTC
+
+    command: >
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+      --sql-mode=STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION
+
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      # Monta la estructura inicial la primera vez que se crea
+      # el volumen. Si el volumen ya existe, no vuelve a ejecutarse.
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+volumes:
+  mariadb_data:

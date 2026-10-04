@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { login as apiLogin } from '../api';
 import './LoginPage.css';
 
-export default function LoginPage() {
+export default function LoginPage({ onActivar }) {
   const { login } = useAuth();
   const [form, setForm]       = useState({ username: '', password: '' });
   const [error, setError]     = useState('');
@@ -19,7 +19,8 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const data = await apiLogin(form);
-      login(data.user);
+      // El backend devuelve { user, token }. El token se guarda solo.
+      login(data.user, data.token);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -76,6 +77,16 @@ export default function LoginPage() {
             {loading ? 'Verificando…' : 'Ingresar'}
           </button>
         </form>
+
+        {/* El cliente que todavia no tiene cuenta entra por aqui. */}
+        {onActivar && (
+          <p className="login-footer">
+            ¿El taller te dio un código?{' '}
+            <a href="#" onClick={(e) => { e.preventDefault(); onActivar(); }}>
+              Activa tu cuenta
+            </a>
+          </p>
+        )}
 
         <p className="login-footer">
           Taller de Gas Natural Vehicular · v1.0

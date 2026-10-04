@@ -25,6 +25,19 @@
 
 .nav-right { display: flex; align-items: center; gap: 12px; }
 
+/* Selector de seccion: Vehiculos / Inventario */
+.nav-secciones { display: flex; gap: 4px; }
+.nav-seccion {
+  padding: 7px 14px; border-radius: 8px; border: none;
+  background: rgba(255,255,255,0.06); color: #cbd5e1;
+  font-size: 0.82rem; font-weight: 700; cursor: pointer;
+  transition: background 0.15s, color 0.15s; white-space: nowrap;
+}
+.nav-seccion:hover { background: rgba(255,255,255,0.14); color: #fff; }
+.nav-seccion-on { background: #0284c7; color: #fff; }
+.nav-seccion-on:hover { background: #0369a1; }
+@media (max-width: 700px) { .nav-secciones { display: none; } }
+
 .role-badge {
   padding: 4px 12px; border-radius: 20px;
   font-size: 0.78rem; font-weight: 700; letter-spacing: 0.3px;
