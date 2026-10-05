@@ -1,0 +1,3 @@
+              <Pressable style={styles.boton} onPress={() => navigation.navigate('MisVehiculos')}><Text style={styles.botonTexto}>Ver mis vehiculos</Text></Pressable>
+              <Pressable style={styles.boton} onPress={() => navigation.navigate('MisCitas')}><Text style={styles.botonTexto}>Mis citas</Text></Pressable>
+              <Pressable style={styles.boton} onPress={() => navigation.navigate('ReservarCita')}><Text style={styles.botonTexto}>Reservar cita</Text></Pressable>

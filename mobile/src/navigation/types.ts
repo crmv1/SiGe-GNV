@@ -15,6 +15,8 @@ export type PublicStackParamList = {
 export type AppStackParamList = {
   Tabs: NavigatorScreenParams<TabParamList>;
   VehicleDetail: { id: number; placa: string };
+  MisCitas: undefined;
+  ReservarCita: undefined;
 };
 
 export type TabParamList = {

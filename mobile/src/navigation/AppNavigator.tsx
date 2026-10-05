@@ -9,6 +9,8 @@ import MyVehiclesScreen from '../screens/MyVehiclesScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import VehicleDetailScreen from '../screens/VehicleDetailScreen';
+import MisCitasScreen from '../screens/Citas/MisCitasScreen';
+import ReservarCitaScreen from '../screens/Citas/ReservarCitaScreen';
 import * as notificationService from '../services/notificationService';
 import { colores } from '../theme';
 import type { AppStackParamList, TabParamList } from './types';
@@ -135,3 +137,4 @@ const styles = StyleSheet.create({
     transform: [{ scale: 1.1 }],
   },
 });
+

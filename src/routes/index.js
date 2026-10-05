@@ -12,6 +12,7 @@ import publicRoutes from '../modules/public/public.routes.js';
 import notificacionesRoutes from '../modules/notificaciones/notificaciones.routes.js';
 import inventarioRoutes from '../modules/inventario/inventario.routes.js';
 import aiRoutes from '../ai/vehicleRecognition/vehicleRecognition.routes.js';
+import citasRoutes from '../modules/citas/routes.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 
 const router = Router();
@@ -64,5 +65,7 @@ router.use('/public', publicRoutes);
 router.use('/integrations/whatsapp', notificacionesRoutes);
 router.use('/inventario', inventarioRoutes);
 router.use('/ai', aiRoutes);
+router.use(citasRoutes);
 
 export default router;
+
