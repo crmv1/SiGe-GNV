@@ -3,6 +3,7 @@
 // ============================================================
 import { signToken } from '../../middleware/auth.js';
 import { emitirCodigo, activarCuenta } from './activacion.service.js';
+import { encolarActivacion } from '../notificaciones/notificaciones.service.js';
 
 /**
  * POST /auth/codigos
@@ -14,15 +15,31 @@ import { emitirCodigo, activarCuenta } from './activacion.service.js';
  * guardar. Si el cliente lo pierde, hay que emitir otro. Es
  * deliberado: si el sistema guardara el codigo, un dump de la
  * base bastaria para activar cuentas ajenas.
+ *
+ * Si el body trae `enviar_whatsapp: true`, el codigo se encola en
+ * la cola de notificaciones (tipo 'activacion') para que WPConnect
+ * lo mande al telefono del cliente.
  */
 export async function crearCodigo(req, res) {
   const resultado = await emitirCodigo(req.body?.telefono);
 
+  let encolado = false;
+  if (req.body?.enviar_whatsapp) {
+    const nombre = `${resultado.cliente.nombre} ${resultado.cliente.apellido}`.trim();
+    const mensaje =
+      `Hola ${nombre}, tu código para activar tu cuenta en SIGE-GNV VC GAS es: ${resultado.codigo}. ` +
+      `Válido por ${resultado.expira_en_dias} días. Descarga la app y usá este código junto con el usuario y contraseña que quieras.`;
+    const id = await encolarActivacion({ telefono: resultado.telefono, mensaje });
+    encolado = Boolean(id);
+  }
+
   return res.status(201).json({
     success: true,
     ...resultado,
-    message:
-      'Codigo generado. Entrégaselo al cliente: es la única vez que se muestra.',
+    encolado_whatsapp: encolado,
+    message: encolado
+      ? 'Código generado y en cola de envío por WhatsApp. También se muestra abajo: es la única vez que aparece.'
+      : 'Codigo generado. Entrégaselo al cliente: es la única vez que se muestra.',
   });
 }
 

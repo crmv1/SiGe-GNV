@@ -3,6 +3,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import VehiculoForm from '../components/VehiculoForm';
 import InventarioPage from './InventarioPage';
+import AgendaPage from './Agenda/AgendaPage';
+import CuentasPage from './Cuentas/CuentasPage';
+import ProyeccionesPage from './Proyecciones/ProyeccionesPage';
 import {
   getVehiculos, addVehiculo, updateVehiculo, deleteVehiculo,
 } from '../api';
@@ -138,6 +141,24 @@ export default function DashboardPage() {
               🚗 Vehículos
             </button>
             <button
+              className={vista === 'agenda' ? 'nav-seccion nav-seccion-on' : 'nav-seccion'}
+              onClick={() => setVista('agenda')}
+            >
+              📅 Agenda
+            </button>
+            <button
+              className={vista === 'cuentas' ? 'nav-seccion nav-seccion-on' : 'nav-seccion'}
+              onClick={() => setVista('cuentas')}
+            >
+              👤 Cuentas
+            </button>
+            <button
+              className={vista === 'proyecciones' ? 'nav-seccion nav-seccion-on' : 'nav-seccion'}
+              onClick={() => setVista('proyecciones')}
+            >
+              📊 Proyecciones
+            </button>
+            <button
               className={vista === 'inventario' ? 'nav-seccion nav-seccion-on' : 'nav-seccion'}
               onClick={() => setVista('inventario')}
             >
@@ -154,7 +175,13 @@ export default function DashboardPage() {
 
       {/* ===== CONTENIDO ===== */}
       <main className="dash-main">
-        {vista === 'inventario' ? (
+        {vista === 'agenda' ? (
+          <AgendaPage />
+        ) : vista === 'cuentas' ? (
+          <CuentasPage />
+        ) : vista === 'proyecciones' ? (
+          <ProyeccionesPage />
+        ) : vista === 'inventario' ? (
           <InventarioPage user={user} />
         ) : (
           <>

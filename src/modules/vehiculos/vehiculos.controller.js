@@ -11,9 +11,10 @@ import {
 } from './vehiculos.service.js';
 import ApiError from '../../utils/ApiError.js';
 
-/** GET /api/vehiculos */
-export async function index(_req, res) {
-  const vehiculos = await listVehiculos();
+/** GET /api/vehiculos?cliente_id=   (filtro opcional para el walk-in) */
+export async function index(req, res) {
+  const clienteId = req.query.cliente_id ? Number(req.query.cliente_id) : null;
+  const vehiculos = await listVehiculos({ clienteId });
   return res.json({ success: true, vehiculos });
 }
 

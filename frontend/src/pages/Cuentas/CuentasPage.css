@@ -1,0 +1,246 @@
+/* src/pages/Cuentas/CuentasPage.css */
+
+.cuentas-wrap {
+  padding: 20px;
+  max-width: 900px;
+}
+
+.cuentas-wrap h2 {
+  margin: 0 0 4px;
+  font-size: 1.4rem;
+  color: #1f2937;
+}
+
+.cuentas-sub {
+  color: #6b7280;
+  font-size: 0.9rem;
+  margin: 0 0 24px;
+}
+
+/* --- Secciones --- */
+.cuentas-seccion {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.cuentas-seccion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.cuentas-seccion h3 {
+  margin: 0 0 4px;
+  font-size: 1rem;
+  color: #1f2937;
+}
+
+.cuentas-count {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.cuentas-nota-seccion {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin: 0 0 12px;
+}
+
+.cuentas-loading {
+  text-align: center;
+  padding: 20px;
+  color: #6b7280;
+}
+
+.cuentas-vacio {
+  text-align: center;
+  padding: 20px;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* --- Tabla de usuarios --- */
+.cuentas-tabla-wrap {
+  overflow-x: auto;
+}
+
+.cuentas-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.cuentas-tabla th {
+  text-align: left;
+  padding: 8px 10px;
+  background: #e5e7eb;
+  color: #374151;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.cuentas-tabla td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #e5e7eb;
+  color: #1f2937;
+}
+
+.cuentas-tabla tr:hover td {
+  background: #f3f4f6;
+}
+
+.cuentas-user {
+  background: #e0e7ff;
+  color: #3730a3;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.8rem;
+}
+
+.cuentas-sin-vincular {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.cuentas-placas {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.cuentas-placa {
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.placa-publico {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.placa-privado {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.cuentas-estado {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.estado-activo {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.estado-inactivo {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* --- Formulario emitir código --- */
+.cuentas-form label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.cuentas-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.cuentas-row input[type="tel"] {
+  flex: 1;
+  min-width: 180px;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.cuentas-check {
+  display: flex !important;
+  align-items: center;
+  gap: 6px;
+  font-weight: 400 !important;
+  cursor: pointer;
+  margin-bottom: 0 !important;
+}
+
+.btn-emitir {
+  padding: 8px 18px;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.btn-emitir:hover { background: #1d4ed8; }
+.btn-emitir:disabled { opacity: 0.6; }
+
+.cuentas-error {
+  background: #fef2f2;
+  color: #b91c1c;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-top: 16px;
+  font-size: 0.9rem;
+}
+
+.cuentas-resultado {
+  margin-top: 24px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.cuentas-resultado h3 {
+  margin: 0 0 12px;
+  font-size: 1rem;
+  color: #065f46;
+}
+
+.cuentas-codigo {
+  font-family: monospace;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #065f46;
+  letter-spacing: 2px;
+  background: #fff;
+  display: inline-block;
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: 2px dashed #a7f3d0;
+  margin-bottom: 12px;
+}
+
+.cuentas-cliente {
+  font-size: 0.9rem;
+  color: #374151;
+  margin: 0 0 6px;
+}
+
+.cuentas-nota {
+  font-size: 0.85rem;
+  color: #92400e;
+  margin: 0;
+}

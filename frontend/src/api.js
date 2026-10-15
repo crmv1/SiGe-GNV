@@ -81,7 +81,8 @@ export async function logout() {
 }
 
 // --- Vehiculos ------------------------------------------------------
-export const getVehiculos = () => request('/vehiculos');
+export const getVehiculos = (clienteId) =>
+  request(clienteId ? `/vehiculos?cliente_id=${clienteId}` : '/vehiculos');
 
 export const getVehiculo = (id) => request(`/vehiculos/${id}`);
 
@@ -143,6 +144,54 @@ export const registrarMovimiento = (body) =>
 export const getAlertasStock = () => request('/inventario/alertas');
 
 export const getResumenInventario = () => request('/inventario/resumen');
+
+// --- Citas / Agenda ---------------------------------------------------
+// Agenda del taller: listado, creación walk-in, cambio de estado y
+// disponibilidad. Los estados de proceso (6 + excepcionales) se
+// reciben del backend en cada respuesta de listado (`estados`).
+export const getCitas = ({ desde, hasta, estado } = {}) => {
+  const params = new URLSearchParams();
+  if (desde) params.append('desde', desde);
+  if (hasta) params.append('hasta', hasta);
+  if (estado) params.append('estado', estado);
+  const qs = params.toString();
+  return request(`/citas${qs ? `?${qs}` : ''}`);
+};
+
+export const crearCita = (body) => request('/citas', { method: 'POST', body });
+
+export const cambiarEstadoCita = (id, body) =>
+  request(`/citas/${id}/estado`, { method: 'PATCH', body });
+
+export const reprogramarCita = (id, body) =>
+  request(`/citas/${id}/reprogramar`, { method: 'PATCH', body });
+
+export const cancelarCita = (id, body) =>
+  request(`/citas/${id}/cancelar`, { method: 'PATCH', body });
+
+export const getClientesAgenda = () => request('/citas/clientes');
+
+// Usuarios de la app móvil (rol cliente) con su ficha y vehículos.
+// Solo administrador.
+export const getUsuariosClientes = () => request('/citas/usuarios-clientes');
+
+export const getAgendaConfig = () => request('/agenda/config');
+
+export const getAgendaDisponibilidad = (fecha) =>
+  request(`/agenda/disponibilidad?fecha=${fecha}`);
+
+// --- Codigos de activacion --------------------------------------------
+// El taller emite un codigo para un telefono. Con enviar_whatsapp
+// true, el backend lo encola en notificaciones tipo 'activacion'
+// y WPConnect lo manda por WhatsApp.
+export const crearCodigo = (body) => request('/auth/codigos', { method: 'POST', body });
+
+export const listarCodigosCliente = (clienteId) =>
+  request(`/auth/codigos/cliente/${clienteId}`);
+
+// --- Predicciones / Proyecciones --------------------------------------
+export const getPredicciones = (meses = 12) =>
+  request(`/predicciones?meses=${meses}`);
 
 // --- Salud del sistema ---------------------------------------------
 export const health = () => request('/health', { auth: false });

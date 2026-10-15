@@ -24,9 +24,11 @@ export const ANIOS_RECALIFICACION = 5;
 
 const CAMPOS = `
   v.id,
+  v.id_cliente,
   v.nombre,
   v.apellido,
   v.placa,
+  v.tipo_vehiculo,
   DATE_FORMAT(v.fecha_recalificacion, '%Y-%m-%d') AS fecha_recalificacion,
   DATE_FORMAT(v.fecha_inspeccion,     '%Y-%m-%d') AS fecha_inspeccion,
   v.telefono,
@@ -216,7 +218,17 @@ export function validateVehiculoBody(body = {}) {
   };
 }
 
-export async function listVehiculos() {
+export async function listVehiculos({ clienteId = null } = {}) {
+  if (clienteId) {
+    return query(
+      `SELECT ${CAMPOS}
+         FROM vehiculos v
+         ${JOIN_FECHAS}
+        WHERE v.id_cliente = ?
+        ORDER BY v.apellido, v.nombre`,
+      [clienteId]
+    );
+  }
   return query(
     `SELECT ${CAMPOS}
        FROM vehiculos v

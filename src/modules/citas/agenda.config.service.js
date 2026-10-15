@@ -1,7 +1,7 @@
 import { query, queryOne } from '../../config/database.js';
 
 export async function obtenerConfig() {
-  return queryOne(SELECT * FROM agenda_config WHERE activo = 1 LIMIT 1);
+  return queryOne('SELECT * FROM agenda_config WHERE activo = 1 LIMIT 1');
 }
 
 export async function actualizarConfig(id, datos, usuarioId) {
@@ -13,7 +13,8 @@ export async function actualizarConfig(id, datos, usuarioId) {
   if (datos.duracion_cita_min) { campos.push('duracion_cita_min=?'); params.push(datos.duracion_cita_min); }
   if (datos.descansos !== undefined) { campos.push('descansos=?'); params.push(datos.descansos ? JSON.stringify(datos.descansos) : null); }
   if (datos.capacidad_por_franja) { campos.push('capacidad_por_franja=?'); params.push(datos.capacidad_por_franja); }
+  if (!campos.length) return obtenerConfig();
   params.push(id);
-  await query(UPDATE agenda_config SET , updated_at=NOW() WHERE id=?, params);
+  await query('UPDATE agenda_config SET ' + campos.join(', ') + ', updated_at=NOW() WHERE id=?', params);
   return obtenerConfig();
 }

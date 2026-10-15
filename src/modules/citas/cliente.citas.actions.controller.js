@@ -19,10 +19,10 @@ export const cancelarCitaCliente = asyncHandler(async (req, res) => {
     if (rows[0].cliente_id !== cliente.id) throw ApiError.forbidden();
     const est = rows[0].estado;
     if (!permitidosCliente[est]) throw ApiError.badRequest('No puede cancelarse en este estado');
-    await conn.query('UPDATE citas SET estado="CANCELADA", motivo_cancelacion=?, updated_at=NOW() WHERE id=?', [motivo||null, id]);
+    await conn.query('UPDATE citas SET estado="CANCELADA", motivo_cancelacion=?, updated_at=NOW() WHERE id=?', [motivo || null, id]);
     await conn.query(
       'INSERT INTO cita_estados_historial (cita_id, estado_anterior, estado_nuevo, usuario_id, observaciones, created_at) VALUES (?,?,?,?,?,NOW())',
-      [id, est, 'CANCELADA', null, motivo||null]
+      [id, est, 'CANCELADA', null, motivo || null]
     );
   });
   res.json({ success: true });
@@ -42,13 +42,12 @@ export const reprogramarCitaCliente = asyncHandler(async (req, res) => {
     const nuevaF = fecha || rows[0].fecha;
     const nuevaH = hora_inicio || rows[0].hora_inicio;
     await conn.query(
-      UPDATE citas SET estado="REPROGRAMADA", motivo_reprogramacion=?, fecha_original=fecha, hora_original=hora_inicio, updated_at=NOW() WHERE id=?,
-      [motivo||null, id]
+      'UPDATE citas SET estado="REPROGRAMADA", fecha=?, hora_inicio=?, motivo_reprogramacion=?, fecha_original=fecha, hora_original=hora_inicio, updated_at=NOW() WHERE id=?',
+      [nuevaF, nuevaH, motivo || null, id]
     );
-    // crear nueva reservada? simplificado: mantener reprogramada y permitir admin confirmar - pero pedimos reprogramar
     await conn.query(
       'INSERT INTO cita_estados_historial (cita_id, estado_anterior, estado_nuevo, usuario_id, observaciones, created_at) VALUES (?,?,?,?,?,NOW())',
-      [id, est, 'REPROGRAMADA', null, motivo||null]
+      [id, est, 'REPROGRAMADA', null, motivo || null]
     );
   });
   res.json({ success: true });

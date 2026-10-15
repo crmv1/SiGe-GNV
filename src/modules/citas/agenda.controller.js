@@ -14,7 +14,11 @@ async function calcularSlots(fecha, duracionMin) {
   if (!config) return [];
   const dur = duracionMin || config.duracion_cita_min || 60;
   const cap = config.capacidad_por_franja || 1;
-  const diasLab = JSON.parse(config.dias_laborales || '[1,2,3,4,5]');
+  // mysql2 devuelve las columnas JSON ya parseadas (como array). Si
+  // viniera como string (otro driver / dump), se parsea aqui. Sin este
+  // guard, JSON.parse(array) falla: convierte el array a "1,2,3,4,5".
+  const crudo = config.dias_laborales;
+  const diasLab = Array.isArray(crudo) ? crudo : JSON.parse(crudo || '[1,2,3,4,5]');
   const d = new Date(fecha + 'T00:00:00');
   const dow = d.getUTCDay() === 0 ? 7 : d.getUTCDay();
   if (!diasLab.includes(dow)) return [];

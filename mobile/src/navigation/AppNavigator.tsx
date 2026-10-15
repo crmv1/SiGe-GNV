@@ -125,6 +125,16 @@ export default function AppNavigator() {
         component={VehicleDetailScreen}
         options={{ title: 'Detalle del vehículo' }}
       />
+      <Stack.Screen
+        name="MisCitas"
+        component={MisCitasScreen}
+        options={{ title: 'Mis citas' }}
+      />
+      <Stack.Screen
+        name="ReservarCita"
+        component={ReservarCitaScreen}
+        options={{ title: 'Reservar cita' }}
+      />
     </Stack.Navigator>
   );
 }

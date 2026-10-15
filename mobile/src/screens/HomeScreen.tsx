@@ -100,9 +100,19 @@ export default function HomeScreen({ navigation }: TabScreenProps<'Inicio'>) {
                 style={styles.boton}
                 onPress={() => navigation.navigate('MisVehiculos')}
               >
-              <Pressable style={styles.boton} onPress={() => navigation.navigate('MisVehiculos')}><Text style={styles.botonTexto}>Ver mis vehículos</Text></Pressable>
-              <Pressable style={styles.boton} onPress={() => navigation.navigate('MisCitas')}><Text style={styles.botonTexto}>Mis citas</Text></Pressable>
-              <Pressable style={styles.boton} onPress={() => navigation.navigate('ReservarCita')}><Text style={styles.botonTexto}>Reservar cita</Text></Pressable>
+                <Text style={styles.botonTexto}>Ver mis vehÃ­culos</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.boton, styles.botonSecundario]}
+                onPress={() => navigation.navigate('MisCitas')}
+              >
+                <Text style={styles.botonSecundarioTexto}>Mis citas</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.boton, styles.botonSecundario]}
+                onPress={() => navigation.navigate('ReservarCita')}
+              >
+                <Text style={styles.botonSecundarioTexto}>Reservar cita</Text>
               </Pressable>
 
               <Text style={styles.nota}>
@@ -194,9 +204,20 @@ const styles = StyleSheet.create({
     borderRadius: radio.md,
     paddingVertical: espaciado.md,
     alignItems: 'center',
+    marginTop: espaciado.sm,
+  },
+  botonSecundario: {
+    backgroundColor: colores.superficie,
+    borderWidth: 1,
+    borderColor: colores.primario,
   },
   botonTexto: {
     color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  botonSecundarioTexto: {
+    color: colores.primario,
     fontSize: 16,
     fontWeight: '700',
   },

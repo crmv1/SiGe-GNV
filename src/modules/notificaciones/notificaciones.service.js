@@ -190,3 +190,28 @@ function formatearFecha(iso) {
   const [y, m, d] = iso.split('-');
   return `${d}/${m}/${y}`;
 }
+
+/**
+ * Encola un mensaje de ACTIVACION de cuenta para enviar por WhatsApp.
+ *
+ * A diferencia de los recordatorios, este no depende de un vehiculo:
+ * id_vehiculo queda NULL (la columna se volvio nullable en la
+ * migracion 015). WPConnect lo toma de la misma cola `pendientes`
+ * que los demas avisos, asi que no hay que tocar el servidor de
+ * WhatsApp.
+ */
+export async function encolarActivacion({ telefono, mensaje, titulo = 'Activación de tu cuenta' }) {
+  const tel = String(telefono ?? '').replace(/[^0-9]/g, '');
+  if (!tel) return null;
+
+  const hoyIso = new Date().toISOString().slice(0, 10);
+
+  const resultado = await query(
+    `INSERT INTO notificaciones
+       (id_vehiculo, tipo, dias_anticipacion, titulo, mensaje, telefono, fecha_programada, estado)
+     VALUES (NULL, 'activacion', 0, ?, ?, ?, ?, 'pendiente')`,
+    [titulo, String(mensaje).slice(0, 1000), tel, hoyIso]
+  );
+
+  return resultado.insertId || null;
+}
