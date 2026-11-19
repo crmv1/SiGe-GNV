@@ -33,7 +33,8 @@ async function arrancar() {
     iniciarJobRecordatorios();
   }
 
-  const server = app.listen(env.port, () => {
+  const bindHost = process.env.API_BIND_HOST?.trim() || undefined;
+  const server = app.listen({ port: env.port, host: bindHost }, () => {
     logger.info(`API escuchando en http://localhost:${env.port}`, {
       entorno: env.nodeEnv,
     });

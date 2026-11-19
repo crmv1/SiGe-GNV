@@ -1,0 +1,23 @@
+.cotizador { display: grid; gap: 1rem; }
+.cotizador h1, .cotizador h2, .cotizador h3, .cotizador p { margin-block: .35rem; }
+.cotizador nav { display: flex; flex-wrap: wrap; gap: .5rem; }
+.cot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); gap: 1rem; }
+.cot-panel { min-width: 0; padding: clamp(.8rem, 3vw, 1.4rem); background: white; border: 1px solid #dce4ee; border-radius: 12px; overflow-wrap: anywhere; }
+.cot-panel label { display: flex; flex-direction: column; align-items: flex-start; gap: .3rem; margin-block: .65rem; font-weight: 600; }
+.cot-panel input:not([type=checkbox]), .cot-panel select { width: 100%; min-width: 0; padding: .55rem; border: 1px solid #abb9cb; border-radius: .4rem; font: inherit; }
+.cot-panel img { display: block; max-width: 100%; max-height: 20rem; object-fit: contain; margin-block: .7rem; }
+.cotizador button { padding: .48rem .8rem; border: 1px solid #9caec6; border-radius: .4rem; color: #16395d; background: #f3f7fc; cursor: pointer; }
+.cotizador button[aria-pressed=true] { color: white; background: #16395d; }
+.cotizador button:disabled { opacity: .55; cursor: default; }
+.cot-panel form { margin: 1rem 0; padding: .75rem 0; border-top: 1px solid #dce4ee; }
+.dash-main.dash-main--cotizador { max-width: 1540px; }
+.cot-workspace { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: start; }
+.cot-budget { display: grid; gap: .45rem; }
+.cot-notice { padding: .8rem; background: #f3f7fc; border-inline-start: 3px solid #446582; border-radius: .3rem; }
+.cot-total { padding: .9rem; border-radius: .55rem; background: #eaf3fc; color: #16395d; }
+.cot-total strong { display: inline-block; margin-top: .35rem; font-size: 1.2rem; }
+.cot-price-list { margin-top: .6rem; border-top: 1px solid #dce4ee; padding-top: .6rem; }
+.cot-price-list dl { display: grid; gap: .4rem; margin: .65rem 0 0; }
+.cot-price-list dl div { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .7rem; padding: .45rem .55rem; background: #f6f8fb; border-radius: .35rem; }
+.cot-price-list dd { margin: 0; white-space: nowrap; font-weight: 600; }
+@media (max-width: 800px) { .cot-workspace { grid-template-columns: minmax(0, 1fr); } }

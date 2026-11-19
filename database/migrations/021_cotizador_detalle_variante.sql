@@ -1,0 +1,5 @@
+ALTER TABLE cot_fichas
+  ADD COLUMN codigo_chasis VARCHAR(100) NULL,
+  ADD COLUMN motorizacion VARCHAR(200) NULL,
+  ADD COLUMN mercado VARCHAR(120) NULL,
+  ADD COLUMN maletera_detalle VARCHAR(1000) NULL;

@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import VehiculoForm from '../components/VehiculoForm';
 import InventarioPage from './InventarioPage';
+import CotizadorPage from './CotizadorPage';
 import AgendaPage from './Agenda/AgendaPage';
 import CuentasPage from './Cuentas/CuentasPage';
 import ProyeccionesPage from './Proyecciones/ProyeccionesPage';
@@ -164,6 +165,9 @@ export default function DashboardPage() {
             >
               📦 Inventario
             </button>
+            {['administrador', 'tecnico'].includes(user?.rol) && <button
+              className={vista === 'cotizador' ? 'nav-seccion nav-seccion-on' : 'nav-seccion'}
+              onClick={() => setVista('cotizador')}>Cotizador IA</button>}
           </nav>
           <span className={`role-badge role-${user?.rol}`}>
             {user?.rol === 'administrador' ? '🛡 Administrador' : '🔧 Técnico'}
@@ -174,13 +178,15 @@ export default function DashboardPage() {
       </header>
 
       {/* ===== CONTENIDO ===== */}
-      <main className="dash-main">
+      <main className={vista === 'cotizador' ? 'dash-main dash-main--cotizador' : 'dash-main'}>
         {vista === 'agenda' ? (
           <AgendaPage />
         ) : vista === 'cuentas' ? (
           <CuentasPage />
         ) : vista === 'proyecciones' ? (
           <ProyeccionesPage />
+        ) : vista === 'cotizador' ? (
+          <CotizadorPage isAdmin={isAdmin} />
         ) : vista === 'inventario' ? (
           <InventarioPage user={user} />
         ) : (

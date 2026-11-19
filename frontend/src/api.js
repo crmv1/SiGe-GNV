@@ -54,6 +54,8 @@ async function request(endpoint, { method = 'GET', body, auth = true } = {}) {
 }
 
 // --- Sesion ---------------------------------------------------------
+export const cotizador = (path = '', method = 'GET', body) => request(`/cotizador${path}`, { method, body });
+
 // La respuesta trae `token`: el backend usa JWT, ya no cookies de
 // sesion PHP. El frontend lo guarda y lo envia en cada peticion.
 export const login = (body) => request('/auth/login', { method: 'POST', body, auth: false });

@@ -1,0 +1,70 @@
+{
+  "accuracy": 0.6575342465753424,
+  "samples": 73,
+  "training_seconds": 15.135000299997046,
+  "inference_ms_p50": 58.67959999886807,
+  "inference_ms_p95": 64.4993199937744,
+  "threshold": 0.7800000000000001,
+  "margin": 0.55,
+  "coverage": 0.3287671232876712,
+  "unknown_samples": 22,
+  "unknown_false_accept_rate": 0.045454545454545456,
+  "accepted_accuracy": 0.9583333333333334,
+  "classification": {
+    "Toyota Corolla": {
+      "precision": 0.5882352941176471,
+      "recall": 0.8,
+      "f1-score": 0.6779661016949152,
+      "support": 25.0
+    },
+    "Toyota RAV4": {
+      "precision": 0.76,
+      "recall": 0.7307692307692307,
+      "f1-score": 0.7450980392156863,
+      "support": 26.0
+    },
+    "__desconocido__": {
+      "precision": 0.6428571428571429,
+      "recall": 0.4090909090909091,
+      "f1-score": 0.5,
+      "support": 22.0
+    },
+    "accuracy": 0.6575342465753424,
+    "macro avg": {
+      "precision": 0.6636974789915966,
+      "recall": 0.6466200466200466,
+      "f1-score": 0.6410213803035338,
+      "support": 73.0
+    },
+    "weighted avg": {
+      "precision": 0.6658731437780593,
+      "recall": 0.6575342465753424,
+      "f1-score": 0.6482424871504209,
+      "support": 73.0
+    }
+  },
+  "confusion_matrix": {
+    "labels": [
+      "Toyota Corolla",
+      "Toyota RAV4",
+      "__desconocido__"
+    ],
+    "counts": [
+      [
+        20,
+        3,
+        2
+      ],
+      [
+        4,
+        19,
+        3
+      ],
+      [
+        10,
+        3,
+        9
+      ]
+    ]
+  }
+}
