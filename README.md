@@ -231,3 +231,7 @@ cd frontend; npm run build
 - `USUARIOS_Y_ARRANQUE.md` — usuarios, contraseñas y cómo levantar todo
 - `ARRANQUE_RAPIDO.md` — arranque rápido
 - `ESTADO_MODULO_CITAS.md` — estado del módulo de citas
+
+## Cotizador Inteligente GNV
+
+El menú **Cotizador IA** está disponible para administradores y técnicos. El piloto identifica Toyota Corolla y RAV4 con TensorFlow.js local. El catálogo comercial usa las migraciones 016 a 028. Consulta el [estado, arranque local y revisión del dataset](docs/COTIZADOR_ESTADO_ACTUAL.md).
