@@ -1,482 +1,237 @@
-# ⛽ GNV Taller — Sistema de Gestión de Clientes y Recordatorios WhatsApp
+# SIGE-GNV VC GAS — Sistema de Gestión de GNV
 
-![Version](https://img.shields.io/badge/versi%C3%B3n-1.0.0-blue)
-![PHP](https://img.shields.io/badge/PHP-8.1%2B-777BB4?logo=php&logoColor=white)
-![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
-![Node](https://img.shields.io/badge/Node.js-%E2%89%A518-339933?logo=node.js&logoColor=white)
-![MySQL](https://img.shields.io/badge/MySQL%20%2F%20MariaDB-10.4-4479A1?logo=mysql&logoColor=white)
-![License](https://img.shields.io/badge/licencia-MIT-green)
-
-Sistema integral para la administración de un taller de **Gas Natural Vehicular (GNV)** — *Taller VC GAS* — que permite gestionar clientes/vehículos, controlar vencimientos de **recalificación de cilindros** e **inspecciones anuales**, y automatizar el envío de **recordatorios por WhatsApp** mediante un chatbot con respuestas oficiales e inteligencia artificial local (Ollama).
+Sistema integral para talleres de conversión a Gas Natural Vehicular (GNV):
+gestión de citas, control de proceso de recalificación, inventario de
+refacciones, predicción de demanda y app móvil para clientes.
 
 ---
 
-## 📑 Tabla de Contenidos
+## Arquitectura
 
-- [Descripción del Sistema](#-descripción-del-sistema)
-- [Arquitectura](#-arquitectura)
-- [Tecnologías Utilizadas](#-tecnologías-utilizadas)
-- [Estructura de Carpetas](#-estructura-de-carpetas)
-- [Funcionalidades](#-funcionalidades)
-- [Prerrequisitos](#-prerrequisitos)
-- [Instalación Paso a Paso](#-instalación-paso-a-paso)
-- [Variables de Entorno / Configuración](#-variables-de-entorno--configuración)
-- [Ejecución del Proyecto](#-ejecución-del-proyecto)
-- [API REST — Endpoints](#-api-rest--endpoints)
-- [Usuarios por Defecto](#-usuarios-por-defecto)
-- [Capturas de Pantalla](#-capturas-de-pantalla)
-- [Contribuciones](#-contribuciones)
-- [Licencia](#-licencia)
-
----
-
-## 📖 Descripción del Sistema
-
-**GNV Taller** es una aplicación web full-stack orientada a talleres que instalan y mantienen equipos de GNV. El sistema resuelve tres necesidades principales:
-
-1. **Gestión administrativa**: registro de propietarios de vehículos con su placa, teléfono y las fechas de vencimiento de la *recalificación del cilindro* (cada 5 años) y la *inspección anual*.
-2. **Recordatorios automáticos por WhatsApp**: cuando un vencimiento se acerca (recalificación ≤ 60 días, inspección ≤ 10 días), el sistema envía un mensaje al cliente evitando duplicados.
-3. **Atención al cliente 24/7**: un chatbot de WhatsApp responde consultas frecuentes (requisitos, horarios, ubicación), consulta datos reales del vehículo por número de placa en la base de datos, y usa una IA local (Ollama) para conversación libre controlada.
-4. **Inventario de repuestos**: control de stock de repuestos GNV (cilindros, válvulas, kits de conversión, etc.) con precios de compra/venta, proveedor y registro de movimientos de **entrada/salida** con historial por artículo.
-
-El panel web distingue dos roles: **técnico** (consulta y registra vehículos y artículos) y **administrador** (además puede eliminar registros).
-
----
-
-## 🏗 Arquitectura
-
-```
-┌──────────────────────┐         ┌─────────────────────────────┐
-│  Frontend (React)    │  HTTP   │  Backend (PHP REST API)     │
-│  http://localhost:5173├────────►│  http://localhost/backend   │
-└──────────────────────┘  JSON   └──────────┬──────────────────┘
-                                            │ PDO
-                                   ┌────────▼────────┐
-                                   │  MySQL/MariaDB  │
-                                   │   gnv_taller    │
-                                   └────────▲────────┘
-                                            │
-┌──────────────────────┐  webhook  ┌────────┴────────────────────┐
-│  WhatsApp Bot        │◄─────────►│  enviar_recordatorios.php   │
-│  (Node + WPPConnect) │           │  (cron o dashboard)         │
-│  http://localhost:21465          └─────────────────────────────┘
-│        │                                          
-│        ▼ consulta placas / IA                    
-┌──────────────────────┐     ┌──────────────────────┐
-│  Backend PHP         │     │  Ollama (IA local)   │
-│  chatbot_webhook.php │     │  modelo vcgas-bot    │
-└──────────────────────┘     │  :11434              │
-                             └──────────────────────┘
-```
-
----
-
-## 💻 Tecnologías Utilizadas
-
-### Frontend
-| Tecnología | Versión | Uso |
+| Componente | Tecnología | Puerto |
 |---|---|---|
-| [React](https://react.dev/) | ^18.3 | Librería UI (SPA) |
-| [Vite](https://vitejs.dev/) | ^5.4 | Dev server y build |
-| CSS puro | — | Estilos personalizados (sin framework) |
-
-### Backend
-| Tecnología | Versión | Uso |
-|---|---|---|
-| PHP | 8.1+ | API REST sin framework |
-| MySQL / MariaDB | 10.4 | Base de datos |
-| PDO | — | Acceso a BD con prepared statements |
-| Sesiones PHP + bcrypt | — | Autenticación y roles |
-
-### Módulo WhatsApp
-| Tecnología | Versión | Uso |
-|---|---|---|
-| Node.js | ≥ 18 | Runtime del bot |
-| [@wppconnect-team/wppconnect](https://wppconnect.io/) | ^1.32 | Conexión no oficial a WhatsApp |
-| Express | ^4.19 | API HTTP del bot |
-| Axios | ^1.7 | Cliente HTTP |
-
-### Inteligencia Artificial
-| Tecnología | Uso |
-|---|---|
-| [Ollama](https://ollama.com/) | Inferencia LLM local |
-| Phi-3 (modelo `vcgas-bot` vía `Modelfile`) | Asistente con datos oficiales del taller |
+| **Base de datos** | MariaDB 13.0 | 3307 (pruebas) |
+| **API backend** | Node.js + Express | 3100 |
+| **Web admin** | React + Vite | 5173 |
+| **App móvil** | React Native (Expo) | 8081 |
+| **WhatsApp** | WPConnect (Baileys) | 21465 |
 
 ---
 
-## 📂 Estructura de Carpetas
+## Funcionalidades implementadas
+
+### 1. Agenda y proceso de recalificación
+
+- **6 estados de proceso visibles** en web y móvil:
+  - `RESERVADA` → `EN_TALLER` → `TANQUE_EN_RECALIFICADORA` → `MONTAJE_Y_PRUEBA` → `LISTA_PARA_RETIRO` → `ENTREGADA`
+  - Además: `CANCELADA`, `NO_ASISTIO`, `REPROGRAMADA`
+- Cada estado muestra badges de color y flechas de transición
+- Web: calendario por día con citas y panel de transiciones
+- Móvil: tira horizontal de 14 días + estados con badge y CTA
+- Vehículos públicos terminan en ~3 días; privados el mismo día
+- Tipo de vehículo se elige al reservar (público / privado)
+
+### 2. Reserva de citas (cliente móvil)
+
+- Solo se puede reservar **recalificación** (no otros servicios)
+- Calendario interactivo con días disponibles y slots por hora
+- Al reservar: tipo de vehículo + placa → aparece en la agenda del taller
+- Móvil: sección "Mis citas" con estado actual y badge de color
+
+### 3. Códigos de activación
+
+- El taller genera un código por teléfono desde la web
+- El código se encola en WhatsApp (si se marca) y se muestra **una sola vez** en pantalla
+- El cliente usa el código + usuario + contraseña para registrarse en la app
+- Endpoint: `POST /api/auth/activar`
+
+### 4. Usuarios de la app móvil (web admin)
+
+- Sección **Cuentas** en la web lista todos los usuarios rol `cliente`
+- Muestra: usuario, cliente, teléfono, placas (color según público/privado), estado
+- Permite generar códigos de activación nuevos
+- Los nombres y placas coinciden entre móvil y web (mismas tablas)
+
+### 5. Inventario
+
+- Catálogo de productos GNV (filtros, mangueras, electroválvulas, etc.)
+- Movimientos: entrada, salida, ajuste, retirada de cilindros
+- Datos demo cargados: 40 productos, 234 movimientos, 913 unidades
+
+### 6. Predicciones (regresión lineal)
+
+- Módulo `src/modules/predicciones/` con modelo de **regresión ponderada**
+- Variables: recalificaciones, inspecciones, conversiones por mes
+- **R²**, error estándar, intervalo ±2·EE (`min`/`max`)
+- **Detección de estacionalidad** (índice mensual, ≥12 meses de historia)
+- Confiabilidad: alta / media / baja / muy_baja
+- Sección **Proyecciones** en la web con métricas, barras y fórmula
+
+---
+
+## Estructura del proyecto
 
 ```
 Proyecto/
-├── backend/                      # API REST en PHP
-│   ├── config.php                # Config central: BD, CORS, sesión, helpers
-│   ├── login.php                 # POST autenticación (sesión + bcrypt)
-│   ├── logout.php                # POST cierre de sesión
-│   ├── verificar_permiso.php     # GET estado de sesión actual
-│   ├── get_vehiculos.php         # GET listar vehículos
-│   ├── add_vehiculo.php          # POST registrar vehículo
-│   ├── update_vehiculo.php       # PUT editar vehículo
-│   ├── delete_vehiculo.php       # DELETE eliminar (solo admin)
-│   ├── enviar_recordatorios.php  # Envío WhatsApp de vencimientos (cron/manual)
-│   ├── chatbot_webhook.php       # Webhook: consulta de vehículo por placa
-│   ├── generate_hashes.php       # Utilidad CLI: genera hashes bcrypt de usuarios
-│   ├── get_inventario.php        # GET listar artículos del inventario
-│   ├── add_articulo.php          # POST registrar artículo (genera entrada inicial)
-│   ├── update_articulo.php       # PUT editar artículo (precios, proveedor…)
-│   ├── delete_articulo.php       # DELETE eliminar artículo (solo admin)
-│   ├── get_movimientos.php       # GET historial de movimientos (?articulo_id=)
-│   └── add_movimiento.php        # POST entrada/salida (actualiza stock)
-│
-├── frontend/                     # SPA React + Vite
-│   ├── package.json
-│   ├── vite.config.js            # Puerto 5173 + proxy /api
+├── src/                    # Backend (Node.js)
+│   ├── config/             # database.js, etc.
+│   ├── middleware/         # auth.js (JWT, requireStaff, requireAdmin)
+│   ├── modules/
+│   │   ├── auth/           # login, registro, activación con código
+│   │   ├── citas/          # agenda, estados, reservas, web actions
+│   │   ├── cliente/        # endpoints del cliente (mis citas)
+│   │   ├── inventario/     # productos, movimientos, retiro cilindros
+│   │   ├── notificaciones/ # cola WhatsApp (recordatorios, activación)
+│   │   ├── predicciones/   # regresión lineal, estacionalidad
+│   │   ├── public/         # endpoints públicos (códigos, registro)
+│   │   └── vehiculos/      # CRUD vehículos
+│   ├── routes/index.js     # rutas montadas por prefijo
+│   └── app.js              # CORS, middleware global
+├── database/
+│   └── migrations/         # 001 a 015
+├── frontend/               # Web (React + Vite)
 │   └── src/
-│       ├── main.jsx              # Punto de entrada
-│       ├── App.jsx               # Rutas según estado de sesión
-│       ├── api.js                # Capa de comunicación con el backend
-│       ├── index.css
-│       ├── context/
-│       │   └── AuthContext.jsx   # Contexto global de autenticación
+│       ├── api.js          # capa HTTP (fetch + JWT)
 │       ├── pages/
-│       │   ├── LoginPage.jsx     # Login profesional con panel de marca
-│       │   ├── DashboardPage.jsx # Layout con sidebar + vista Dashboard (KPIs)
-│       │   └── InventoryPage.jsx # Vista del inventario de repuestos
+│       │   ├── Agenda/         # calendario, citas, estados
+│       │   ├── Cuentas/        # usuarios móvil + generar código
+│       │   ├── Proyecciones/   # predicciones, gráficos
+│       │   ├── Inventario/     # productos, movimientos
+│       │   └── DashboardPage.jsx  # nav con 4 secciones
 │       └── components/
-│           ├── Logo.jsx              # Logo "VC GAS" reutilizable
-│           ├── VehiculoForm.jsx      # Modal alta/edición de vehículo
-│           ├── InventarioForm.jsx    # Modal alta/edición de artículo
-│           ├── MovimientoForm.jsx    # Modal registro entrada/salida
-│           └── MovimientosModal.jsx  # Historial de movimientos por artículo
-│
-├── whatsapp/                     # Servidor del chatbot
-│   ├── package.json
-│   ├── server.js                 # Bot WPPConnect + cola anti-baneo + IA
-│   ├── Modelfile                 # Definición del modelo Ollama (vcgas-bot)
-│   └── tokens/                   # Sesión de WhatsApp (generada al escanear QR)
-│
-├── gnv_taller.sql                # Dump principal de BD (esquema + datos demo)
-├── inventario.sql                # Esquema del módulo de inventario (artículos + movimientos)
-├── taller_clientes (1).sql       # Dump de una iteración anterior (referencia)
-├── taller_clientes.sql           # Dump actualizado de clientes
-├── compartir/                    # Archivos compartidos auxiliares
-├── .gitignore
-└── README.md
+├── mobile/                 # App móvil (Expo)
+│   └── src/
+│       ├── navigation/AppNavigator.tsx
+│       ├── services/citaService.ts
+│       └── screens/
+│           ├── Citas/ReservarCitaScreen.tsx
+│           ├── Citas/MisCitasScreen.tsx
+│           ├── VehicleDetailScreen.tsx
+│           └── HomeScreen.tsx
+├── whatsapp/               # WPConnect (Baileys) puerto 21465
+└── scripts/                # utilidades, seeds, helpers
 ```
 
 ---
 
-## ✨ Funcionalidades
+## Migraciones (base 3307)
 
-### 🔐 Autenticación y Roles
-- Inicio/cierre de sesión con contraseñas cifradas (**bcrypt**) y sesiones PHP.
-- Verificación automática de sesión activa al cargar la app.
-- Dos roles: `técnico` (ver, crear, editar) y `administrador` (todo + eliminar).
-
-### 🚗 Gestión de Vehículos
-- Registro completo: propietario, placa (única), fechas de recalificación e inspección, teléfono.
-- Edición y eliminación con confirmación modal.
-- Búsqueda instantánea por nombre, apellido, placa o teléfono.
-
-### 📦 Inventario de Repuestos
-- Alta, edición y eliminación (solo admin) de artículos GNV: nombre, descripción, cantidad, **precio de compra y venta** (Bs) y proveedor.
-- Movimientos de **entrada/salida** que actualizan el stock automáticamente y se registran con **fecha**, cantidad y usuario que los realizó.
-- Validación de stock: una salida no puede superar la cantidad disponible.
-- Historial completo por artículo y resumen del **valor del inventario** según precio de compra.
-
-### 🎨 Semáforo de Vencimientos
-Badges de colores según días restantes:
-
-| Estado | Condición |
-|---|---|
-| 🔴 Vencido | fecha pasada |
-| 🟠 Crítico | ≤ 30 días |
-| 🟡 Próximo | ≤ 90 días |
-| 🟢 OK | > 90 días |
-
-Enlaces directos `wa.me` al teléfono de cada cliente.
-
-### 📲 Recordatorios Automáticos por WhatsApp
-- Recalificación: se avisa **60 días antes** del vencimiento.
-- Inspección anual: se avisa **10 días antes**.
-- Tabla `recordatorios_enviados` garantiza que **no se dupliquen mensajes**.
-- Se disparan al abrir el dashboard o vía **cron/tarea programada**.
-- Si se edita la fecha de un vehículo, sus recordatorios se reinician.
-
-### 🤖 Chatbot Inteligente (flujo híbrido)
-1. **Consulta por placa** → responde con datos reales desde MySQL (propietario y fechas).
-2. **Preguntas frecuentes** → respuestas oficiales exactas del taller (requisitos de recalificación, instalación GNV, inspección, horarios, ubicación, citas).
-3. **Conversación libre** → IA local (Ollama) restringida a los datos oficiales; nunca inventa precios ni requisitos.
-4. Menú de bienvenida si no entiende la consulta.
-
-### 🛡 Cola Anti-Baneo del Bot
-- Espera aleatoria de **20–40 s** entre mensajes enviados.
-- Descanso de **10–15 min** cada **10–15 mensajes**.
-- Agrupación de mensajes consecutivos de un mismo usuario (buffer de 8 s).
-- Ignora mensajes antiguos (>15 s), grupos y no-texto.
-
----
-
-## 📋 Prerrequisitos
-
-| Requisito | Versión mínima | Descarga |
+| # | Archivo | Contenido |
 |---|---|---|
-| XAMPP (Apache + PHP + MariaDB + phpMyAdmin) | PHP 8.1+ | <https://www.apachefriends.org/> |
-| Node.js | 18.x LTS | <https://nodejs.org/> |
-| Git | cualquiera | <https://git-scm.com/> |
-| Ollama *(solo chatbot IA)* | 0.3+ | <https://ollama.com/download> |
-| Navegador Chromium/Chrome | — | Requerido por WPPConnect |
-| Cuenta de WhatsApp activa | — | Para vincular el bot por QR |
-
-> 💡 El proyecto fue desarrollado sobre Windows + XAMPP (MariaDB 10.4.32 / PHP 8.1.25), pero funciona en cualquier stack LAMP equivalente.
-
----
-
-## ⚙️ Instalación Paso a Paso
-
-### 1️⃣ Clonar el repositorio
-
-```bash
-git clone https://github.com/TU-USUARIO/gnv-taller.git
-cd gnv-taller
-```
-
-*(Si aún no existe remoto, copia la carpeta del proyecto manualmente.)*
-
-### 2️⃣ Base de datos
-
-1. Inicia **Apache** y **MySQL** desde el panel de XAMPP.
-2. Abre <http://localhost/phpmyadmin>.
-3. Crea la base de datos `gnv_taller` (collation `utf8mb4_general_ci`).
-4. Importa el archivo **`gnv_taller.sql`** (pestaña *Importar*).
-5. Importa también **`inventario.sql`** para crear las tablas del módulo de inventario: `articulos_inventario`, `movimientos_inventario`.
-6. Verifica que existan las tablas: `usuarios`, `vehiculos`, `recordatorios_enviados`, `articulos_inventario`, `movimientos_inventario`.
-
-> El dump ya incluye usuarios de prueba y vehículos de ejemplo. Para regenerar contraseñas personalizadas ejecuta:
-> ```bash
-> php backend/generate_hashes.php
-> ```
-
-### 3️⃣ Backend (PHP)
-
-Copia la carpeta `backend/` dentro del directorio público de Apache:
-
-```powershell
-# Windows + XAMPP
-Copy-Item -Recurso .\backend -Destination C:\xampp\htdocs\backend -Recurse
-```
-
-Comprueba que responde: <http://localhost/backend/verificar_permiso.php>
-(debe devolver JSON `401 No autenticado` ✔)
-
-### 4️⃣ Frontend (React)
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Abre <http://localhost:5173>.
-
-### 5️⃣ Servidor WhatsApp (chatbot)
-
-```bash
-cd whatsapp
-npm install
-npm start
-```
-
-La primera vez aparecerá un **QR en consola**: escanéalo desde
-*WhatsApp → Dispositivos vinculados → Vincular dispositivo*.
-La sesión queda persistida en `whatsapp/tokens/` (no vuelve a pedir QR).
-
-> ⚠️ `tokens/` contiene credenciales sensibles: **no lo subas al repositorio**.
-
-### 6️⃣ Modelo de IA con Ollama (opcional pero recomendado)
-
-```bash
-ollama serve                       # servidor de inferencia
-ollama pull phi3                   # base del modelo
-cd whatsapp
-ollama create vcgas-bot -f Modelfile
-```
-
-Sin este paso el bot sigue funcionando con las respuestas oficiales y la consulta por placa (la IA es el último nivel del flujo).
+| 001 | initial_schema.sql | Esquema base: usuarios, clientes, vehículos, citas, notificaciones |
+| 002 | add_notificaciones.sql | Tabla notificaciones |
+| 003 | add_codigos_activacion.sql | Códigos de activación |
+| 004 | add_dispositivos_push.sql | Tokens push |
+| 005 | add_usuarios_estado.sql | Estado de usuario (activo/inactivo) |
+| 006 | add_inventario.sql | Productos y movimientos |
+| 007 | inventario_datos_ia.sql | Datos demo inventario |
+| 008 | recordatorios_10d.sql | Recordatorios 10 días antes |
+| 009 | normalizar_cliente_vehiculo.sql | Relación cliente-vehículo |
+| 010 | codigos_activacion_cliente.sql | Código → cliente |
+| 011 | retirar_cilindros.sql | Retiro de cilindros |
+| 012 | marca_modelo_y_push_cliente.sql | Marca/modelo |
+| 013 | drop_marca_modelo.sql | Limpieza |
+| 014 | agenda_citas.sql | Agenda (origen, tipo_vehiculo) |
+| 015 | citas_proceso_y_codigos.sql | **Estados de proceso, enum, notificaciones.id_vehiculo** |
 
 ---
 
-## 🔧 Variables de Entorno / Configuración
+## Endpoints principales
 
-El proyecto actualmente centraliza su configuración en constantes (no usa archivos `.env`). Estos son todos los puntos que puedes/debes ajustar:
+### Auth
+- `POST /api/auth/login` — login (web y móvil)
+- `POST /api/auth/activar` — activar cuenta con código
+- `POST /api/auth/registro` — registro con código
 
-### `backend/config.php`
-| Constante | Valor por defecto | Descripción |
-|---|---|---|
-| `DB_HOST` | `localhost` | Host de MySQL |
-| `DB_NAME` | `gnv_taller` | Nombre de la base de datos |
-| `DB_USER` | `root` | Usuario de BD — **cámbialo en producción** |
-| `DB_PASS` | *(vacío)* | Contraseña de BD — **cámbiala en producción** |
-| `$allowedOrigin` | `http://localhost:5173` | Origen CORS permitido (URL del frontend) |
+### Citas (staff/admin)
+- `GET /api/citas` — listar citas
+- `POST /api/citas` — crear (walk-in)
+- `PATCH /api/citas/:id/estado` — cambiar estado (transiciones)
+- `PATCH /api/citas/:id/reprogramar`
+- `PATCH /api/citas/:id/cancelar`
+- `GET /api/citas/clientes` — listar clientes para agenda
+- `GET /api/citas/usuarios-clientes` — usuarios móvil con vehículos (admin)
 
-### `backend/enviar_recordatorios.php`
-| Constante | Valor por defecto | Descripción |
-|---|---|---|
-| `WPPCONNECT_URL` | `http://localhost:21465` | URL del servidor del bot |
-| `WPPCONNECT_TOKEN` | `TU_TOKEN_AQUI` | Token Bearer de wpp.connect |
-| `WPPCONNECT_SESSION` | `gnv-taller` | Nombre de sesión de WhatsApp |
-| `$_GET['key']` | `gnv2024secreto` | Clave secreta para invocarlo desde cron |
+### Cliente (app móvil)
+- `GET /api/cliente/citas` — mis citas
+- `POST /api/cliente/citas` — reservar (solo recalificación)
+- `GET /api/cliente/vehiculos` — mis vehículos
 
-### `whatsapp/server.js`
-| Constante | Valor por defecto | Descripción |
-|---|---|---|
-| `SESSION` | `gnv-taller` | Nombre de la sesión de WhatsApp |
-| `PORT` | `21465` | Puerto HTTP del bot |
-| `BACKEND_URL` | `http://127.0.0.1/backend` | URL del backend PHP |
-| `OLLAMA_URL` | `http://127.0.0.1:11434` | Endpoint de Ollama |
-| `OLLAMA_MODEL` | `vcgas-bot` | Modelo de IA a usar |
+### Predicciones
+- `GET /api/predicciones?meses=12` — modelo, R², estacionalidad, capacidad
 
-### `frontend/src/api.js`
-| Constante | Valor por defecto | Descripción |
-|---|---|---|
-| `BASE` | `http://localhost/backend` | URL base del backend PHP |
-
-> 🔒 Recomendación: migra estos valores a variables de entorno (`getenv()` en PHP, `process.env` en Node con `dotenv`) antes de desplegar en producción.
-
----
-
-## ▶️ Ejecución del Proyecto
-
-Orden recomendado (usa una terminal por componente):
-
-```text
-PASO 1 · Panel XAMPP      → Iniciar Apache y MySQL
-PASO 2 · Terminal 1       → cd frontend  && npm run dev      # http://localhost:5173
-PASO 3 · Terminal 2       → cd whatsapp  && npm start        # QR la primera vez
-PASO 4 · Terminal 3       → ollama serve                     # opcional (IA)
-```
-
-### Flujo de uso típico
-
-1. Entra a <http://localhost:5173> e inicia sesión (`administrador / admin123`).
-2. Registra vehículos desde **“+ Nuevo Vehículo”**.
-3. El semáforo de colores te mostrará los vencimientos críticos.
-4. Al cargar el dashboard se disparan automáticamente los recordatorios pendientes (si el bot está conectado).
-5. Los clientes escriben al WhatsApp del taller y el chatbot responde solo.
-
-### Recordatorios por cron (opcional)
-
-```bash
-# Linux/macOS (crontab -e): cada día 9 AM
-0 9 * * * curl -s "http://localhost/backend/enviar_recordatorios.php?key=gnv2024secreto"
-
-# Windows: Programador de tareas → acción:
-"C:\xampp\php\php.exe" C:\xampp\htdocs\backend\enviar_recordatorios.php
-```
-
----
-
-## 🔌 API REST — Endpoints
-
-Base: `http://localhost/backend` · Autenticación por cookie de sesión · Respuestas `{ success, ... }`
-
-| Método | Endpoint | Auth | Descripción |
-|---|---|---|---|
-| `POST` | `/login.php` | — | `{username, password}` → inicia sesión |
-| `POST` | `/logout.php` | — | Cierra la sesión |
-| `GET` | `/verificar_permiso.php` | ✔ | Devuelve usuario y rol actuales |
-| `GET` | `/get_vehiculos.php` | ✔ | Lista todos los vehículos |
-| `POST` | `/add_vehiculo.php` | ✔ | Registra vehículo (valida placa única) |
-| `PUT` | `/update_vehiculo.php` | ✔ | Edita vehículo (reinicia recordatorios) |
-| `DELETE` | `/delete_vehiculo.php` | 🛡 admin | Elimina vehículo por `{id}` |
-| `GET` | `/enviar_recordatorios.php` | sesión ó `?key=` | Procesa y envía recordatorios |
-| `POST` | `/chatbot_webhook.php` | interna | Busca vehículo por placa para el bot |
+### Agenda
+- `GET /api/agenda/config`
+- `GET /api/agenda/disponibilidad?fecha=YYYY-MM-DD`
 
 ### Inventario
-| Método | Endpoint | Auth | Descripción |
-|---|---|---|---|
-| `GET` | `/get_inventario.php` | ✔ | Lista todos los artículos |
-| `POST` | `/add_articulo.php` | ✔ | Registra artículo (la cantidad inicial genera una entrada) |
-| `PUT` | `/update_articulo.php` | ✔ | Edita artículo (precios, descripción, proveedor) |
-| `DELETE` | `/delete_articulo.php` | 🛡 admin | Elimina artículo (y su historial en cascada) |
-| `GET` | `/get_movimientos.php` | ✔ | Lista movimientos; `?articulo_id=` filtra por artículo |
-| `POST` | `/add_movimiento.php` | ✔ | Registra entrada/salida y actualiza el stock |
-
-Códigos habituales: `200 OK` · `201 Creado` · `400 Validación` · `401 Sin sesión` · `403 Sin permisos` · `404 No encontrado` · `409 Duplicado`.
+- `GET /api/inventario/productos`
+- `POST /api/inventario/movimientos`
 
 ---
 
-## 👤 Usuarios por Defecto
+## Datos de prueba
 
-| Usuario | Contraseña | Rol |
-|---|---|---|
-| `tecnico` | `tecnico123` | Técnico |
-| `administrador` | `admin123` | Administrador |
-
-> ⚠️ **Cambia estas credenciales antes de usar en producción.**
-
----
-
-## 📸 Capturas de Pantalla
-
-> 🚧 *Espacios reservados — añade tus imágenes en `docs/screenshots/`.*
-
-| Vista | Captura |
+| Dato | Cantidad |
 |---|---|
-| Inicio de sesión | `![Login](docs/screenshots/login.png)` |
-| Dashboard principal | `![Dashboard](docs/screenshots/dashboard.png)` |
-| Formulario de vehículo | `![Formulario](docs/screenshots/formulario.png)` |
-| Recordatorio WhatsApp | ![WhatsApp](docs/screenshots/whatsapp.png) |
-| Chatbot en acción | ![Chatbot](docs/screenshots/chatbot.png) |
-
-<!-- Sugerencia: capturar 1) LoginPage, 2) tabla con badges de colores,
-     3) modal VehiculoForm, 4) mensaje recibido del recordatorio,
-     5) respuesta del bot al consultar una placa -->
-
----
-
-## 🤝 Contribuciones
-
-Las contribuciones son bienvenidas. Para colaborar:
-
-1. Haz un **fork** del repositorio.
-2. Crea una rama con tu mejora:
-   ```bash
-   git checkout -b feature/mi-mejora
-   ```
-3. Realiza los cambios y haz commit:
-   ```bash
-   git commit -m "feat: describe tu cambio"
-   ```
-4. Sube la rama y abre un **Pull Request** describiendo qué aporta.
-
-Convenciones sugeridas:
-- Mensajes de commit estilo [*Conventional Commits*](https://www.conventionalcommits.org/es/).
-- Un tema por PR, con pruebas manuales documentadas.
+| Clientes | 248 |
+| Vehículos | 247 (70 públicos, 173 privados) |
+| Citas (varios estados) | 64 |
+| Recalificaciones/mes (próximos 12) | ~16 |
+| Conversiones/mes (histórico 12 meses) | ~20 |
+| Productos inventario | 40 |
+| Movimientos inventario | 234 |
+| Usuarios móviles | 3 |
 
 ---
 
-## 📄 Licencia
+## Comandos útiles
 
-Este proyecto se distribuye bajo la licencia **MIT**.
+```powershell
+# Levantar todo
+.\scripts\levantar-todo.ps1
 
-```
-MIT License
+# Apagar todo
+.\scripts\levantar-todo.ps1 -Apagar
 
-Copyright (c) 2026 GNV Taller — Taller VC GAS
+# Correr un script contra la 3307
+.\scripts\con-3307.ps1 scripts\seed-proyecciones.mjs
 
-Por la presente se concede permiso, libre de cargos, a cualquier persona
-que obtenga una copia de este software y de los archivos de documentación
-asociados, a utilizar el software sin restricción, incluyendo sin
-limitación los derechos a copiar, modificar, fusionar, publicar,
-distribuir, sublicenciar, y/o vender copias del software, siempre que la
-anterior nota de copyright y este aviso de permiso se incluyan en todas
-las copias sustanciales del Software.
+# Cargar inventario demo
+.\scripts\con-3307.ps1 scripts\cargar-inventario-demo.js
 
-EL SOFTWARE SE PROPORCIONA "COMO ESTÁ", SIN GARANTÍA DE NINGÚN TIPO...
+# Cambiar contraseña de un usuario
+node scripts\set-user-password.js <username> <nueva>
+
+# Verificar conexión a 3307
+node scripts\verify-database.js
+
+# Typecheck móvil
+cd mobile; npx tsc --noEmit
+
+# Build web
+cd frontend; npm run build
 ```
 
 ---
 
-<div align="center">
-  Hecho con ❤️ para el Taller VC GAS — Cochabamba, Bolivia 🇧🇴
-</div>
+## Reglas de seguridad
+
+1. **La base 3306 REAL NUNCA se toca** — todo corre contra la 3307 de pruebas.
+2. **JWT** para autenticación; roles: `administrador`, `tecnico`, `cliente`.
+3. **CORS** limitado a métodos GET, POST, PUT, PATCH, DELETE, OPTIONS.
+4. **Códigos de activación** se muestran solo una vez en pantalla.
+5. **Contraseñas** con bcrypt (10 rounds).
+6. La API **no tiene hot-reload** → reiniciar después de cambios.
+
+---
+
+## Documentación adicional
+
+- `USUARIOS_Y_ARRANQUE.md` — usuarios, contraseñas y cómo levantar todo
+- `ARRANQUE_RAPIDO.md` — arranque rápido
+- `ESTADO_MODULO_CITAS.md` — estado del módulo de citas
+
+## Cotizador Inteligente GNV
+
+El menú **Cotizador IA** está disponible para administradores y técnicos. El piloto identifica Toyota Corolla y RAV4 con TensorFlow.js local. El catálogo comercial usa las migraciones 016 a 028. Consulta el [estado, arranque local y revisión del dataset](docs/COTIZADOR_ESTADO_ACTUAL.md).

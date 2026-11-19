@@ -1,12 +1,12 @@
 // src/pages/InventoryPage.jsx
 import { useState, useEffect, useCallback } from 'react';
 import InventarioForm   from '../components/InventarioForm';
-import MovimientoForm   from '../components/MovimientoForm';
+import MovimientoForm   from '../components/MovimientoFormLegacy';
 import MovimientosModal from '../components/MovimientosModal';
 import {
   getInventario, addArticulo, updateArticulo, deleteArticulo,
   addMovimiento,
-} from '../api';
+} from '../api.legacy';
 import './InventoryPage.css';
 
 function formatMoney(n) {

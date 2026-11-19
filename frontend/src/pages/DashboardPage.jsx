@@ -3,10 +3,14 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import Logo from '../components/Logo';
 import VehiculoForm from '../components/VehiculoForm';
-import InventoryPage from './InventoryPage';
+import InventarioPage from './InventarioPage';
+import CotizadorPage from './CotizadorPage';
+import AgendaPage from './Agenda/AgendaPage';
+import CuentasPage from './Cuentas/CuentasPage';
+import ProyeccionesPage from './Proyecciones/ProyeccionesPage';
 import {
   getVehiculos, addVehiculo, updateVehiculo,
-  deleteVehiculo, dispararRecordatorios, getInventario,
+  deleteVehiculo, getProductos,
 } from '../api';
 import './DashboardPage.css';
 
@@ -66,8 +70,8 @@ function DashboardView({ user, vehiculos, articulos, goVehiculos, goInventario }
     return d !== null && d <= 30;
   }).length;
 
-  const unidadesStock = articulos.reduce((a, b) => a + Number(b.cantidad || 0), 0);
-  const valorInv = articulos.reduce((a, b) => a + Number(b.cantidad || 0) * Number(b.precio_compra || 0), 0);
+  const unidadesStock = articulos.reduce((a, b) => a + Number(b.stock_actual || 0), 0);
+  const valorInv = articulos.reduce((a, b) => a + Number(b.stock_actual || 0) * Number(b.precio_compra || 0), 0);
 
   const kpis = [
     { icon: '🚗', label: 'Vehículos registrados', value: vehiculos.length, grad: 'kpi-blue',  hint: 'en la base de datos' },
@@ -83,7 +87,7 @@ function DashboardView({ user, vehiculos, articulos, goVehiculos, goInventario }
     .slice(0, 5);
 
   const menorStock = [...articulos]
-    .sort((a, b) => a.cantidad - b.cantidad)
+    .sort((a, b) => a.stock_actual - b.stock_actual)
     .slice(0, 5);
 
   return (
@@ -152,9 +156,9 @@ function DashboardView({ user, vehiculos, articulos, goVehiculos, goInventario }
           ) : (
             <ul className="panel-list">
               {menorStock.map(a => (
-                <li key={a.id}>
-                  <span className={`pl-date ${a.cantidad === 0 ? 'pl-zero' : ''}`}>
-                    <b>{a.cantidad}</b>
+                <li key={a.id_producto}>
+                  <span className={`pl-date ${a.stock_actual === 0 ? 'pl-zero' : ''}`}>
+                    <b>{a.stock_actual}</b>
                     <small>unid.</small>
                   </span>
                   <span className="pl-info">
@@ -175,12 +179,20 @@ function DashboardView({ user, vehiculos, articulos, goVehiculos, goInventario }
 //  Página principal
 // ============================================================
 const NAV = [
+  { id: 'agenda', label: 'Agenda' },
+  { id: 'proyecciones', label: 'Proyecciones' },
+  { id: 'cotizador', label: 'Cotizador IA', staffOnly: true },
+  { id: 'cuentas', label: 'Cuentas', adminOnly: true },
   { id: 'dashboard',  icon: '📊', label: 'Dashboard' },
   { id: 'vehiculos',  icon: '🚗', label: 'Vehículos' },
   { id: 'inventario', icon: '📦', label: 'Inventario' },
 ];
 
 const TITLES = {
+  agenda: { title: 'Agenda', sub: 'Citas y estados del taller' },
+  proyecciones: { title: 'Proyecciones', sub: 'Demanda y actividad del taller' },
+  cotizador: { title: 'Cotizador IA', sub: 'Identificación y presupuestos referenciales' },
+  cuentas: { title: 'Cuentas', sub: 'Usuarios de la aplicación móvil' },
   dashboard:  { title: 'Dashboard',         sub: 'Resumen general del taller' },
   vehiculos:  { title: 'Vehículos',         sub: 'Gestión de vehículos y vencimientos' },
   inventario: { title: 'Inventario',        sub: 'Repuestos GNV y control de stock' },
@@ -199,15 +211,17 @@ export default function DashboardPage() {
   const [confirm, setConfirm]     = useState(null);
 
   const isAdmin = user?.rol === 'administrador';
+  const isStaff = isAdmin || user?.rol === 'tecnico';
+  const navigation = NAV.filter((item) => (!item.adminOnly || isAdmin) && (!item.staffOnly || isStaff));
 
   // ---------- Carga inicial --------------------------------
   const cargar = useCallback(async () => {
     setLoading(true);
     try {
-      const [dataVehi, dataInv] = await Promise.allSettled([getVehiculos(), getInventario()]);
+      const [dataVehi, dataInv] = await Promise.allSettled([getVehiculos(), getProductos()]);
       if (dataVehi.status === 'fulfilled') setVehiculos(dataVehi.value.vehiculos);
       else showToast('Error al cargar vehículos: ' + dataVehi.reason.message, 'error');
-      if (dataInv.status === 'fulfilled') setArticulos(dataInv.value.articulos);
+      if (dataInv.status === 'fulfilled') setArticulos(dataInv.value.data ?? dataInv.value.productos ?? []);
     } finally {
       setLoading(false);
     }
@@ -215,7 +229,6 @@ export default function DashboardPage() {
 
   useEffect(() => {
     cargar();
-    dispararRecordatorios().catch(() => {});
   }, [cargar]);
 
   // ---------- Toast ----------------------------------------
@@ -233,7 +246,7 @@ export default function DashboardPage() {
   };
 
   const handleUpdate = async (form) => {
-    await updateVehiculo({ id: editing.id, ...form });
+    await updateVehiculo(editing.id, form);
     showToast('Vehículo actualizado correctamente ✔');
     setEditing(null);
     cargar();
@@ -275,7 +288,7 @@ export default function DashboardPage() {
 
         <nav className="sidebar-nav">
           <span className="nav-caption">Menú principal</span>
-          {NAV.map(n => (
+          {navigation.map(n => (
             <button
               key={n.id}
               className={`nav-item ${view === n.id ? 'nav-item-active' : ''}`}
@@ -313,7 +326,7 @@ export default function DashboardPage() {
           </span>
         </header>
 
-        <div className="content">
+        <div className={view === 'cotizador' ? 'content content--cotizador' : 'content'}>
           {view === 'dashboard' && (
             <DashboardView
               user={user}
@@ -420,7 +433,11 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {view === 'inventario' && <InventoryPage user={user} />}
+          {view === 'inventario' && <InventarioPage user={user} />}
+           {view === 'agenda' && <AgendaPage />}
+           {view === 'proyecciones' && <ProyeccionesPage />}
+           {view === 'cuentas' && isAdmin && <CuentasPage />}
+           {view === 'cotizador' && isStaff && <CotizadorPage isAdmin={isAdmin} />}
         </div>
       </div>
 

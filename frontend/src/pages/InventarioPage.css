@@ -1,0 +1,220 @@
+/* InventarioPage.css
+   Comparte la paleta y las clases base de DashboardPage.css
+   (inv-page cuelga de .dash-wrap, la tabla reutiliza
+   .vehiculos-table, los botones .btn-add y .btn-edit).
+   Aqui solo viven las piezas propias del inventario. */
+
+/* ===== RESUMEN ===== */
+.inv-stats {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 12px; margin-bottom: 16px;
+}
+
+.inv-stat {
+  background: #fff; border-radius: 12px; padding: 14px 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  border-left: 4px solid #0284c7;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.inv-stat-warn   { border-left-color: #f59e0b; }
+.inv-stat-danger { border-left-color: #dc2626; }
+
+.inv-stat-num {
+  font-size: 1.55rem; font-weight: 800; color: #1a2332; line-height: 1.1;
+}
+.inv-stat-lbl {
+  font-size: 0.72rem; color: #6b7280; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+@media (max-width: 640px) {
+  .inv-stats { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ===== BANNER DE STOCK MINIMO ===== */
+.inv-banner {
+  background: #fffbeb; border: 1px solid #fcd34d;
+  border-left: 4px solid #f59e0b;
+  border-radius: 12px; padding: 12px 16px; margin-bottom: 16px;
+  font-size: 0.86rem; color: #78350f;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+}
+.inv-banner strong { font-size: 0.9rem; }
+.inv-banner-list {
+  list-style: none; margin: 0; padding: 0; width: 100%;
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px;
+}
+.inv-banner-list li {
+  background: #fff; border: 1px solid #fcd34d; border-radius: 8px;
+  padding: 3px 10px; font-size: 0.8rem;
+}
+
+.inv-note {
+  background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px;
+  padding: 10px 14px; margin: 0 0 14px;
+  font-size: 0.84rem; color: #1e3a5f;
+}
+
+/* ===== FILTROS ===== */
+.inv-select {
+  padding: 9px 12px; border-radius: 9px; border: 2px solid #e5e7eb;
+  background: #fff; font-size: 0.86rem; color: #374151; outline: none;
+}
+.inv-select:focus { border-color: #0284c7; }
+
+.inv-check {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.84rem; font-weight: 600; color: #374151;
+  background: #fff; border: 2px solid #e5e7eb; border-radius: 9px;
+  padding: 7px 12px; cursor: pointer; user-select: none;
+}
+.inv-check input { accent-color: #f59e0b; cursor: pointer; }
+
+/* ===== PESTANAS ===== */
+.inv-tabs {
+  display: flex; gap: 4px; margin-bottom: -1px;
+  border-bottom: 2px solid #e5e7eb; padding-left: 4px;
+}
+.inv-tab {
+  padding: 9px 18px; border: none; background: none; cursor: pointer;
+  font-size: 0.88rem; font-weight: 700; color: #6b7280;
+  border-bottom: 3px solid transparent; margin-bottom: -2px;
+  transition: color 0.15s, border-color 0.15s;
+}
+.inv-tab:hover { color: #1a2332; }
+.inv-tab-on { color: #0284c7; border-bottom-color: #0284c7; }
+
+/* ===== TABLA ===== */
+.inv-table td { font-size: 0.86rem; }
+.inv-desc  { font-size: 0.78rem; color: #6b7280; margin-top: 2px; }
+.inv-precios { font-size: 0.75rem; color: #94a3b8; margin-top: 3px; }
+.inv-cat {
+  background: #f1f5f9; color: #475569; padding: 2px 9px;
+  border-radius: 10px; font-size: 0.74rem; font-weight: 700;
+}
+.inv-inactivo { font-size: 0.72rem; color: #9ca3af; }
+
+.inv-stock {
+  font-weight: 800; font-size: 0.88rem; white-space: nowrap;
+}
+.inv-stock-ok     { color: #15803d; }
+.inv-stock-bajo   { color: #b45309; }
+.inv-stock-vacio  { color: #dc2626; }
+
+/* ===== HISTORIAL: chips de tipo de movimiento ===== */
+.inv-mov {
+  padding: 2px 10px; border-radius: 10px;
+  font-size: 0.72rem; font-weight: 800; letter-spacing: 0.3px;
+}
+.inv-mov-entrada { background: #dcfce7; color: #15803d; }
+.inv-mov-salida  { background: #fee2e2; color: #b91c1c; }
+.inv-mov-ajuste  { background: #fef3c7; color: #b45309; }
+
+/* ===== MODALES ===== */
+.inv-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  display: flex; align-items: flex-start; justify-content: center;
+  z-index: 200; padding: 24px 16px; overflow-y: auto;
+}
+
+.inv-card {
+  background: #fff; border-radius: 14px; padding: 24px 28px;
+  max-width: 620px; width: 100%;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+  animation: slideUp 0.2s ease;
+}
+
+.inv-card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 18px;
+}
+.inv-card-header h2 { margin: 0; font-size: 1.1rem; font-weight: 800; color: #1a2332; }
+
+.inv-close {
+  border: none; background: #f1f5f9; color: #64748b;
+  width: 30px; height: 30px; border-radius: 8px;
+  font-size: 0.9rem; cursor: pointer; transition: background 0.15s;
+}
+.inv-close:hover { background: #e2e8f0; }
+
+/* ===== FORMULARIO ===== */
+.inv-form { display: flex; flex-direction: column; gap: 14px; }
+
+.inv-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.inv-field { flex: 1 1 200px; display: flex; flex-direction: column; gap: 5px; }
+.inv-field label { font-size: 0.78rem; font-weight: 700; color: #374151; }
+.inv-hint { font-weight: 500; color: #94a3b8; font-size: 0.72rem; }
+.inv-hint-block {
+  margin: 0; background: #f8fafc; border-left: 3px solid #0284c7;
+  border-radius: 0 8px 8px 0; padding: 8px 12px;
+  font-size: 0.76rem; color: #475569; line-height: 1.45;
+}
+
+.inv-field input, .inv-field select, .inv-field textarea {
+  padding: 9px 12px; border-radius: 9px; border: 2px solid #e5e7eb;
+  font-size: 0.88rem; font-family: inherit; color: #1a2332;
+  outline: none; background: #fff; resize: vertical;
+  transition: border-color 0.2s;
+}
+.inv-field input:focus, .inv-field select:focus, .inv-field textarea:focus {
+  border-color: #0284c7;
+}
+
+.inv-stock-actual {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 10px;
+  padding: 10px 14px; margin-bottom: 16px; font-size: 0.88rem; color: #374151;
+}
+.inv-stock-chip {
+  background: #1e3a5f; color: #93c5fd; padding: 3px 10px; border-radius: 6px;
+  font-size: 0.78rem; font-weight: 800; letter-spacing: 1px;
+}
+.inv-stock-num { margin-left: auto; color: #64748b; }
+.inv-stock-num strong { color: #1a2332; font-size: 1.05rem; }
+
+/* Selector de tipo de movimiento */
+.inv-tipo-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.inv-tipo {
+  flex: 1 1 160px; cursor: pointer;
+  border: 2px solid #e5e7eb; border-radius: 10px; padding: 10px 12px;
+  display: flex; flex-direction: column; gap: 2px;
+  transition: border-color 0.15s, background 0.15s;
+}
+.inv-tipo input { display: none; }
+.inv-tipo strong { font-size: 0.86rem; color: #1a2332; }
+.inv-tipo span   { font-size: 0.7rem; color: #6b7280; line-height: 1.3; }
+.inv-tipo:hover  { border-color: #cbd5e1; }
+.inv-tipo-on     { border-color: #0284c7; background: #eff6ff; }
+.inv-tipo-on strong { color: #1d4ed8; }
+
+/* Avisos dentro del modal */
+.inv-error, .inv-warn {
+  margin: 0; padding: 10px 14px; border-radius: 9px;
+  font-size: 0.82rem; font-weight: 600; line-height: 1.4;
+}
+.inv-error { background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; }
+.inv-warn  { background: #fffbeb; border: 1px solid #fcd34d; color: #92400e; }
+
+/* ===== ACCIONES DEL FORMULARIO ===== */
+.inv-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 4px; }
+
+.inv-btn-cancel, .inv-btn-save {
+  padding: 10px 22px; border-radius: 9px;
+  font-size: 0.88rem; font-weight: 700; cursor: pointer;
+  transition: opacity 0.15s, background 0.15s;
+}
+.inv-btn-cancel {
+  border: 2px solid #e5e7eb; background: #fff; color: #374151;
+}
+.inv-btn-cancel:hover { background: #f9fafb; }
+.inv-btn-save {
+  border: none; color: #fff;
+  background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
+}
+.inv-btn-save:hover { opacity: 0.9; }
+.inv-btn-save:disabled { opacity: 0.55; cursor: not-allowed; }
+
+@media (max-width: 640px) {
+  .inv-card { padding: 18px; }
+  .inv-stock-num { margin-left: 0; width: 100%; }
+}

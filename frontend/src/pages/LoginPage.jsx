@@ -11,7 +11,7 @@ const BRAND_FEATURES = [
   { icon: '📦', title: 'Inventario de repuestos', desc: 'Stock, precios y movimientos controlados.' },
 ];
 
-export default function LoginPage() {
+export default function LoginPage({ onActivar }) {
   const { login } = useAuth();
   const [form, setForm]       = useState({ username: '', password: '' });
   const [error, setError]     = useState('');
@@ -26,7 +26,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const data = await apiLogin(form);
-      login(data.user);
+      login(data.user, data.token);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -113,6 +113,12 @@ export default function LoginPage() {
             </button>
           </form>
 
+          {onActivar && (
+            <p className="login-footer">
+              ¿El taller te dio un código?{' '}
+              <a href="#" onClick={(event) => { event.preventDefault(); onActivar(); }}>Activa tu cuenta</a>
+            </p>
+          )}
           <p className="login-footer">
             Taller VC GAS · Sistema de Gestión · v1.1
           </p>

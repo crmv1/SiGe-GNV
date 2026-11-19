@@ -1,0 +1,272 @@
+/* src/pages/Proyecciones/ProyeccionesPage.css */
+
+.proj-wrap {
+  padding: 20px;
+  max-width: 1100px;
+}
+
+.proj-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.proj-toolbar h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: #1f2937;
+}
+
+.proj-toolbar select {
+  padding: 6px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+}
+
+.proj-error {
+  background: #fef2f2;
+  color: #b91c1c;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.proj-loading {
+  text-align: center;
+  padding: 40px;
+  color: #6b7280;
+}
+
+/* --- Resumen --- */
+.proj-resumen {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.proj-card {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+}
+
+.proj-num {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.proj-lbl {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+/* --- Alerta saturación --- */
+.proj-alerta {
+  background: #fffbeb;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}
+
+/* --- Serie de barras --- */
+.serie {
+  margin-bottom: 28px;
+}
+
+.serie-titulo {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #1f2937;
+  margin-bottom: 10px;
+}
+
+.serie-barras {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 160px;
+  padding: 0 4px;
+}
+
+.serie-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+  gap: 4px;
+  min-width: 0;
+}
+
+.serie-valor {
+  font-size: 0.7rem;
+  color: #374151;
+  font-weight: 600;
+}
+
+.serie-barra {
+  width: 100%;
+  max-width: 36px;
+  border-radius: 4px 4px 0 0;
+  min-height: 2px;
+  transition: height 0.3s;
+}
+
+.serie-mes {
+  font-size: 0.65rem;
+  color: #9ca3af;
+  white-space: nowrap;
+}
+
+/* --- Modelo --- */
+.proj-modelo {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.proj-modelo h3 {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  color: #1e40af;
+}
+
+.proj-formula {
+  font-family: monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  background: #fff;
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px dashed #93c5fd;
+  margin: 0 0 10px !important;
+}
+
+.proj-modelo p {
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+.proj-metricas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.proj-metrica {
+  background: #fff;
+  border: 1px solid #dbeafe;
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+}
+
+.proj-metrica-num {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1e3a8a;
+}
+
+.proj-metrica-lbl {
+  display: block;
+  font-size: 0.7rem;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+.proj-conf-alta { color: #059669 !important; }
+.proj-conf-media { color: #d97706 !important; }
+.proj-conf-baja { color: #dc2626 !important; }
+.proj-conf-muy_baja { color: #dc2626 !important; }
+
+.proj-modelo-meta {
+  font-size: 0.8rem !important;
+  color: #6b7280 !important;
+}
+
+.proj-estacional {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #bfdbfe;
+}
+
+.proj-estacional h4 {
+  margin: 0 0 8px;
+  font-size: 0.85rem;
+  color: #1e40af;
+}
+
+.proj-estacional-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+}
+
+.proj-estacional-item {
+  background: #fff;
+  border: 1px solid #dbeafe;
+  border-radius: 6px;
+  padding: 6px;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #374151;
+}
+
+.proj-estacional-item strong {
+  display: block;
+  color: #1e40af;
+  font-size: 0.95rem;
+}
+
+/* --- Ingresos --- */
+.proj-ingresos {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.proj-ingresos h3 {
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+  color: #166534;
+}
+
+.proj-ingresos ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.proj-ingresos li {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  font-size: 0.85rem;
+  color: #374151;
+  border-bottom: 1px solid #dcfce7;
+}
+
+.proj-sin-precio {
+  color: #9ca3af;
+  font-size: 0.85rem;
+  font-style: italic;
+}

@@ -1,6 +1,6 @@
 // src/components/MovimientosModal.jsx
 import { useState, useEffect } from 'react';
-import { getMovimientos } from '../api';
+import { getMovimientos } from '../api.legacy';
 import './MovimientosModal.css';
 
 export default function MovimientosModal({ articulo, onClose }) {

@@ -48,6 +48,26 @@
 
 .vf-hint { font-weight: 400; color: #9ca3af; text-transform: none; font-size: 0.75rem; }
 
+/* La casilla "No conozco la fecha real" es un label como los
+   otros, asi que sin esto heredaria el uppercase del titulo y el
+   input ocuparia todo el ancho. */
+.vf-check {
+  display: flex !important; align-items: center; gap: 7px;
+  margin: 7px 0 0 !important;
+  font-weight: 400 !important; text-transform: none !important;
+  letter-spacing: 0 !important; font-size: 0.75rem !important;
+  color: #6b7280 !important; cursor: pointer;
+}
+
+.vf-check input[type="checkbox"] {
+  width: 15px; height: 15px; margin: 0; padding: 0; flex: 0 0 auto;
+  accent-color: #4a7c2f; cursor: pointer;
+}
+
+.vf-field input:disabled {
+  background: #f3f4f6; color: #9ca3af; cursor: not-allowed;
+}
+
 .vf-field input {
   width: 100%; padding: 10px 14px;
   border: 2px solid #e5e7eb; border-radius: 9px;
@@ -87,4 +107,16 @@
 
 @media (max-width: 520px) {
   .vf-row { grid-template-columns: 1fr; }
+}
+
+/* Vista previa del vencimiento que calcula el sistema (+1 anio / +5 anios). */
+.vf-preview {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #6b7a5a;
+}
+
+.vf-preview strong {
+  color: #2f4a1f;
 }
